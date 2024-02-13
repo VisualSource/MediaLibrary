@@ -1,4 +1,4 @@
-package us.visualsource.media_entertainment_app;
+package us.visualsource.media_entertainment_app.config;
 
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;

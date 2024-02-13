@@ -13,31 +13,124 @@ import { createFileRoute } from '@tanstack/react-router'
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
+import { Route as RootImport } from './routes/_root'
 
 // Create Virtual Routes
 
-const IndexLazyImport = createFileRoute('/')()
+const SignupLazyImport = createFileRoute('/signup')()
+const LogoutLazyImport = createFileRoute('/logout')()
+const LoginLazyImport = createFileRoute('/login')()
+const AccountLazyImport = createFileRoute('/account')()
+const RootIndexLazyImport = createFileRoute('/_root/')()
+const RootSeriesLazyImport = createFileRoute('/_root/series')()
+const RootMoviesLazyImport = createFileRoute('/_root/movies')()
+const RootBookmarkedLazyImport = createFileRoute('/_root/bookmarked')()
 
 // Create/Update Routes
 
-const IndexLazyRoute = IndexLazyImport.update({
-  path: '/',
+const SignupLazyRoute = SignupLazyImport.update({
+  path: '/signup',
   getParentRoute: () => rootRoute,
-} as any).lazy(() => import('./routes/index.lazy').then((d) => d.Route))
+} as any).lazy(() => import('./routes/signup.lazy').then((d) => d.Route))
+
+const LogoutLazyRoute = LogoutLazyImport.update({
+  path: '/logout',
+  getParentRoute: () => rootRoute,
+} as any).lazy(() => import('./routes/logout.lazy').then((d) => d.Route))
+
+const LoginLazyRoute = LoginLazyImport.update({
+  path: '/login',
+  getParentRoute: () => rootRoute,
+} as any).lazy(() => import('./routes/login.lazy').then((d) => d.Route))
+
+const AccountLazyRoute = AccountLazyImport.update({
+  path: '/account',
+  getParentRoute: () => rootRoute,
+} as any).lazy(() => import('./routes/account.lazy').then((d) => d.Route))
+
+const RootRoute = RootImport.update({
+  id: '/_root',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const RootIndexLazyRoute = RootIndexLazyImport.update({
+  path: '/',
+  getParentRoute: () => RootRoute,
+} as any).lazy(() => import('./routes/_root/index.lazy').then((d) => d.Route))
+
+const RootSeriesLazyRoute = RootSeriesLazyImport.update({
+  path: '/series',
+  getParentRoute: () => RootRoute,
+} as any).lazy(() => import('./routes/_root/series.lazy').then((d) => d.Route))
+
+const RootMoviesLazyRoute = RootMoviesLazyImport.update({
+  path: '/movies',
+  getParentRoute: () => RootRoute,
+} as any).lazy(() => import('./routes/_root/movies.lazy').then((d) => d.Route))
+
+const RootBookmarkedLazyRoute = RootBookmarkedLazyImport.update({
+  path: '/bookmarked',
+  getParentRoute: () => RootRoute,
+} as any).lazy(() =>
+  import('./routes/_root/bookmarked.lazy').then((d) => d.Route),
+)
 
 // Populate the FileRoutesByPath interface
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/': {
-      preLoaderRoute: typeof IndexLazyImport
+    '/_root': {
+      preLoaderRoute: typeof RootImport
       parentRoute: typeof rootRoute
+    }
+    '/account': {
+      preLoaderRoute: typeof AccountLazyImport
+      parentRoute: typeof rootRoute
+    }
+    '/login': {
+      preLoaderRoute: typeof LoginLazyImport
+      parentRoute: typeof rootRoute
+    }
+    '/logout': {
+      preLoaderRoute: typeof LogoutLazyImport
+      parentRoute: typeof rootRoute
+    }
+    '/signup': {
+      preLoaderRoute: typeof SignupLazyImport
+      parentRoute: typeof rootRoute
+    }
+    '/_root/bookmarked': {
+      preLoaderRoute: typeof RootBookmarkedLazyImport
+      parentRoute: typeof RootImport
+    }
+    '/_root/movies': {
+      preLoaderRoute: typeof RootMoviesLazyImport
+      parentRoute: typeof RootImport
+    }
+    '/_root/series': {
+      preLoaderRoute: typeof RootSeriesLazyImport
+      parentRoute: typeof RootImport
+    }
+    '/_root/': {
+      preLoaderRoute: typeof RootIndexLazyImport
+      parentRoute: typeof RootImport
     }
   }
 }
 
 // Create and export the route tree
 
-export const routeTree = rootRoute.addChildren([IndexLazyRoute])
+export const routeTree = rootRoute.addChildren([
+  RootRoute.addChildren([
+    RootBookmarkedLazyRoute,
+    RootMoviesLazyRoute,
+    RootSeriesLazyRoute,
+    RootIndexLazyRoute,
+  ]),
+  AccountLazyRoute,
+  LoginLazyRoute,
+  LogoutLazyRoute,
+  SignupLazyRoute,
+])
 
 /* prettier-ignore-end */

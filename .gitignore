@@ -12,7 +12,7 @@ target/
 .settings
 .springBeans
 .sts4-cache
-
+.pnpm-store
 ### IntelliJ IDEA ###
 .idea
 *.iws
@@ -28,8 +28,7 @@ target/
 build/
 !**/src/main/**/build/
 !**/src/test/**/build/
-
+src/main/resources/static/**
 ### VS Code ###
 .vscode/
 
-src/main/resources/static/**
