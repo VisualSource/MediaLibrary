@@ -8,6 +8,6 @@ const Account: React.FC = () => {
     );
 }
 
-export const Route = createLazyFileRoute("/account")({
+export const Route = createLazyFileRoute("/_authenticated/account")({
     component: Account
 });

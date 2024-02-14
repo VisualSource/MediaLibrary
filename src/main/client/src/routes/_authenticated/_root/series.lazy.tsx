@@ -1,6 +1,6 @@
 import { createLazyFileRoute } from "@tanstack/react-router";
 
-const Movies: React.FC = () => {
+const Series: React.FC = () => {
     return (
         <div>
             <h3 className="font-bold">Welcome</h3>
@@ -8,6 +8,6 @@ const Movies: React.FC = () => {
     );
 }
 
-export const Route = createLazyFileRoute("/_root/movies")({
-    component: Movies
+export const Route = createLazyFileRoute("/_authenticated/_root/series")({
+    component: Series
 });

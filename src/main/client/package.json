@@ -18,7 +18,8 @@
     "lucide-react": "^0.330.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "tailwind-merge": "^2.2.1"
+    "tailwind-merge": "^2.2.1",
+    "use-debounce": "^10.0.0"
   },
   "devDependencies": {
     "@tanstack/react-query-devtools": "^5.20.2",
