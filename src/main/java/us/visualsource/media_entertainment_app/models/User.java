@@ -38,12 +38,21 @@ public class User {
     @Setter
     private String password;
 
+    @Getter
+    @Setter
+    private String avatar;
+
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id"))
     @Getter
     @Setter
     private Set<Role> roles = new HashSet<>();
+
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true,
+            mappedBy = "owner")
+    @Getter
+    private Set<Bookmark> bookmarks = new HashSet<>();
 
     public User(String username, String email, String password) {
         this.username = username;

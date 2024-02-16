@@ -16,6 +16,66 @@
 	<properties>
 		<java.version>21</java.version>
 	</properties>
+	<profiles>
+		<profile>
+			<id>dev</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+			<properties>
+				<spring.profiles.active>dev</spring.profiles.active>
+			</properties>
+		</profile>
+		<profile>
+			<id>prod</id>
+			<properties>
+				<spring.profiles.active>prod</spring.profiles.active>
+			</properties>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.codehaus.mojo</groupId>
+						<artifactId>exec-maven-plugin</artifactId>
+						<version>3.1.1</version>
+						<executions>
+							<execution>
+								<id>install-frontend-dependencies</id>
+								<phase>generate-sources</phase>
+								<goals>
+									<goal>exec</goal>
+								</goals>
+								<configuration>
+									<workingDirectory>src/main/client</workingDirectory>
+									<executable>pnpm</executable>
+									<arguments>
+										<argument>install</argument>
+										<argument>--frozen-lockfile</argument>
+									</arguments>
+								</configuration>
+							</execution>
+							<execution>
+								<id>build-and-include-frontend</id>
+								<phase>generate-sources</phase>
+								<goals>
+									<goal>exec</goal>
+								</goals>
+								<configuration>
+									<workingDirectory>src/main/client</workingDirectory>
+									<executable>pnpm</executable>
+									<arguments>
+										<argument>run</argument>
+										<argument>build</argument>
+									</arguments>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
+
+
 	<dependencies>
 
 		<dependency>
@@ -96,44 +156,6 @@
 					</excludes>
 				</configuration>
 			</plugin>
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>exec-maven-plugin</artifactId>
-				<version>3.1.0</version>
-				<executions>
-					<execution>
-						<id>install-frontend-dependencies</id>
-						<phase>generate-sources</phase>
-						<goals>
-							<goal>exec</goal>
-						</goals>
-						<configuration>
-							<workingDirectory>src/main/client</workingDirectory>
-							<executable>pnpm</executable>
-							<arguments>
-								<argument>install</argument>
-								<argument>--frozen-lockfile</argument>
-							</arguments>
-						</configuration>
-					</execution>
-					<execution>
-						<id>build-and-include-frontend</id>
-						<phase>generate-sources</phase>
-						<goals>
-							<goal>exec</goal>
-						</goals>
-						<configuration>
-							<workingDirectory>src/main/client</workingDirectory>
-							<executable>pnpm</executable>
-							<arguments>
-								<argument>run</argument>
-								<argument>build</argument>
-							</arguments>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
 		</plugins>
 	</build>
-
 </project>

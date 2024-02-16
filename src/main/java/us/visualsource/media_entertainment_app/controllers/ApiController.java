@@ -1,50 +1,130 @@
 package us.visualsource.media_entertainment_app.controllers;
 
 import java.util.List;
-import java.util.stream.Collector;
+import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.repository.query.Param;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Size;
+import us.visualsource.media_entertainment_app.dto.request.BookmarkRequest;
+import us.visualsource.media_entertainment_app.dto.response.BookmarkResponse;
+import us.visualsource.media_entertainment_app.dto.response.ErrorResponse;
 import us.visualsource.media_entertainment_app.dto.response.UserResponse;
+import us.visualsource.media_entertainment_app.models.Bookmark;
+import us.visualsource.media_entertainment_app.models.Media;
 import us.visualsource.media_entertainment_app.models.User;
-import us.visualsource.media_entertainment_app.repository.UserRepository;
+import us.visualsource.media_entertainment_app.repository.*;
 import us.visualsource.media_entertainment_app.services.JwtService;
 import us.visualsource.media_entertainment_app.services.impl.UserDetailsImpl;
 
 @RestController
-@RequestMapping("api")
+@RequestMapping("/api")
 public class ApiController {
     @Autowired
     JwtService jwtService;
     @Autowired
     UserRepository userRepository;
 
+    @Autowired
+    MediaRepository mediaRepository;
 
-    @GetMapping("/serach")
-    @PreAuthorize("hasRole('ROLE_USER')")
-    public String search() {
-        return "";
+    @Autowired
+    BookmarkRepository bookmarkRepository;
+
+    private final Logger logger = LoggerFactory.getLogger(ApiController.class);
+
+    private UserDetailsImpl getUser() {
+        return (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication()
+                .getPrincipal();
+    }
+
+    private ResponseEntity<?> badRequest() {
+        ErrorResponse response =
+                ErrorResponse.builder().message(HttpStatus.BAD_REQUEST.getReasonPhrase())
+                        .status(HttpStatus.BAD_REQUEST.value()).build();
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+    }
+
+    private List<Media> searchMedia(String query, Optional<Boolean> bookmarked,
+            Optional<String> type) {
+        if (bookmarked.isPresent()) {
+            UserDetailsImpl user = getUser();
+
+            if (type.isPresent()) {
+                return mediaRepository.searchBy(query, user.getId(), type.get());
+            }
+
+            return mediaRepository.searchBy(query, user.getId());
+        }
+
+        if (type.isPresent()) {
+            return mediaRepository.searchBy(query, type.get());
+        }
+
+        return mediaRepository.serachBy(query);
+    }
+
+
+    @GetMapping("/search")
+    public ResponseEntity<?> Search(@RequestParam("q") String query,
+            @RequestParam("bookmarked") Optional<Boolean> bookmarked,
+            @Size(min = 5) @RequestParam("type") Optional<String> type) {
+
+        logger.info("Query: {}", query);
+        logger.info("Is Bookmarked {}", bookmarked);
+
+        List<Media> results = searchMedia(query, bookmarked, type);
+
+        return ResponseEntity.ok(results);
     }
 
     @PatchMapping("/bookmark")
-    @PreAuthorize("hasRole('ROLE_USER')")
-    public String bookmark() {
-        return "";
+    public ResponseEntity<?> bookmark(@Valid @RequestBody BookmarkRequest request) {
+        UserDetailsImpl userDetails = getUser();
+        UUID itemId = request.getItem();
+        Long userId = userDetails.getId();
+
+        if (itemId == null || userId == null) {
+            return badRequest();
+        }
+
+        Optional<Bookmark> bookmark = bookmarkRepository.findByMediaAndOwner(itemId, userId);
+
+        if (bookmark.isEmpty()) {
+            Optional<User> user = userRepository.findById(userId);
+            Optional<Media> media = mediaRepository.findById(itemId);
+
+            if (user.isEmpty() || media.isEmpty()) {
+                return badRequest();
+            }
+
+            Bookmark item = bookmarkRepository.save(new Bookmark(user.get(), media.get()));;
+
+            return ResponseEntity.ok(new BookmarkResponse(true, item.getId()));
+        }
+
+        Bookmark result = bookmark.get();
+
+        if (result == null) {
+            return badRequest();
+        }
+
+        bookmarkRepository.delete(result);
+
+        return ResponseEntity.ok(new BookmarkResponse(false, null));
     }
 
     @GetMapping(value = "/user", produces = MediaType.APPLICATION_JSON_VALUE)
     public UserResponse GetUser() {
-        UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext()
-                .getAuthentication().getPrincipal();
+        UserDetailsImpl userDetails = getUser();
 
         List<String> roles = userDetails.getAuthorities().stream().map(e -> e.getAuthority())
                 .collect(Collectors.toList());
@@ -53,4 +133,5 @@ public class ApiController {
                 .username(userDetails.getUsername()).id(userDetails.getId()).avatar("").roles(roles)
                 .build();
     }
+
 }
