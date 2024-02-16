@@ -1,4 +1,10 @@
-export default function isAuthenticated() {
+import { getSessionToken } from "./getSessionToken";
 
-    return false;
+export default function isAuthenticated() {
+    try {
+        getSessionToken();
+        return true;
+    } catch (error) {
+        return false;
+    }
 }

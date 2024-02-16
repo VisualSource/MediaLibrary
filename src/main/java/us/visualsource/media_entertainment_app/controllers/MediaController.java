@@ -19,11 +19,15 @@ import jakarta.validation.Valid;
 import us.visualsource.media_entertainment_app.dto.request.FileUploadRequest;
 import us.visualsource.media_entertainment_app.models.Media;
 import us.visualsource.media_entertainment_app.repository.MediaRepository;
+import us.visualsource.media_entertainment_app.services.JwtService;
 import us.visualsource.media_entertainment_app.services.impl.UserDetailsImpl;
 
 @RestController
 @RequestMapping("/api/media")
 public class MediaController {
+
+    @Autowired
+    JwtService jwtService;
 
     @Autowired
     MediaRepository mediaRepository;
@@ -56,7 +60,7 @@ public class MediaController {
         return ResponseEntity.status(HttpStatus.CREATED).body(null);
     }
 
-    @GetMapping("/")
+    @GetMapping
     public ResponseEntity<?> GetMedia(@RequestParam("type") Optional<String> type,
             @RequestParam("bookmarked") Optional<Boolean> bookmarked) {
         if (type.isPresent() && bookmarked.isPresent()) {
@@ -87,4 +91,8 @@ public class MediaController {
         return ResponseEntity.ok(mediaRepository.selectFirst(10));
     }
 
+    @GetMapping("/recommeded")
+    public ResponseEntity<?> GetRecommeded() {
+        return ResponseEntity.ok(mediaRepository.findAll());
+    }
 }

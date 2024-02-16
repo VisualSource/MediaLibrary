@@ -14,6 +14,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Size;
+
 import us.visualsource.media_entertainment_app.dto.request.BookmarkRequest;
 import us.visualsource.media_entertainment_app.dto.response.BookmarkResponse;
 import us.visualsource.media_entertainment_app.dto.response.ErrorResponse;
@@ -76,7 +77,7 @@ public class ApiController {
     @GetMapping("/search")
     public ResponseEntity<?> Search(@RequestParam("q") String query,
             @RequestParam("bookmarked") Optional<Boolean> bookmarked,
-            @Size(min = 5) @RequestParam("type") Optional<String> type) {
+            @RequestParam("type") Optional<String> type) {
 
         logger.info("Query: {}", query);
         logger.info("Is Bookmarked {}", bookmarked);

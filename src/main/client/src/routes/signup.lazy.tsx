@@ -15,7 +15,10 @@ const SignUp: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 grid-rows-none h-full">
             <div className="bg-slate-900 hidden md:block relative">
                 <h2 className="absolute top-4 left-4">Media Library</h2>
-                <img className="h-full w-full object-cover" src="https://images.unsplash.com/photo-1679041006302-cf5e318da08c?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="background" />
+                <img className="h-full w-full object-cover" src="https://images.unsplash.com/photo-1707853722132-6569cd4f0f06?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="background" />
+                <div className="absolute bottom-4 right-4 text-sm bg-neutral-400/75 text-center px-1.5 py-1 rounded-md">
+                    Photo by <a className="text-blue-600 underline active:text-purple-600" target="_blank" href="https://unsplash.com/@wolfgang_hasselmann?utm_content=creditCopyText&utm_medium=referral&utm_source=unsplash">Wolfgang Hasselmann</a> on <a className="text-blue-600 underline" target="_blank" href="https://unsplash.com/photos/a-tree-in-the-middle-of-a-desert-rclK3HN5QH8?utm_content=creditCopyText&utm_medium=referral&utm_source=unsplash">Unsplash</a>
+                </div>
             </div>
 
             <div className="flex flex-col justify-center items-center relative h-full space-y-6">
@@ -30,7 +33,9 @@ const SignUp: React.FC = () => {
 
                     const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/auth/signup`, {
                         method: "POST",
-                        headers: {},
+                        headers: {
+                            "content-type": "application/json"
+                        },
                         body: JSON.stringify({
                             username: data.get("username"),
                             password: data.get("password"),

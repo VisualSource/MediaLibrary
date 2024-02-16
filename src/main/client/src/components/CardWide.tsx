@@ -8,7 +8,7 @@ type CardProps = {
         color: string; // placeholder color
     }
     data: {
-        year: string;
+        year: number;
         type: string;
         rating: string;
         title: string;

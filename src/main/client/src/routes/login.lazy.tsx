@@ -1,9 +1,11 @@
 import Button from "@/components/Button";
 import Input from "@/components/Input";
+import { useAuth } from "@/hooks/useAuth";
 import { Link, createLazyFileRoute, useNavigate } from "@tanstack/react-router";
 
 const Login: React.FC = () => {
     const navigate = useNavigate();
+    const auth = useAuth();
     return (
         <div className="grid grid-cols-1 md:grid-cols-2 grid-rows-none h-full">
             <div className="bg-slate-900 hidden md:block relative">
@@ -35,6 +37,11 @@ const Login: React.FC = () => {
                     if (!response.ok) {
                         return;
                     }
+
+
+                    const { accessToken } = await response.json() as { accessToken: string };
+
+                    auth.setToken(accessToken);
 
                     navigate({ to: "/" });
                 }} className="flex flex-col space-y-6 w-1/4">

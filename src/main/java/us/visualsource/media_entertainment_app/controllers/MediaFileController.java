@@ -1,30 +1,34 @@
 package us.visualsource.media_entertainment_app.controllers;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import us.visualsource.media_entertainment_app.services.JwtService;
 
 @RestController
-@RequestMapping("/api/media")
+@RequestMapping("/api/media/{uuid}")
 public class MediaFileController {
 
-    @GetMapping("/{uuid}")
+    @Autowired
+    JwtService jwtService;
+
+
+    @GetMapping("/")
     public ResponseEntity<?> GetFileMetadata() {
         return ResponseEntity.ok(null);
     }
 
-    @GetMapping("/{uuid}/download")
+    @GetMapping("/download")
     public ResponseEntity<?> GetFileDownload() {
         return ResponseEntity.ok(null);
     }
 
-    @GetMapping("/{uuid}")
+    @PatchMapping("/")
     public ResponseEntity<?> PatchFileMetadata() {
         return ResponseEntity.ok(null);
     }
 
-    @GetMapping("/{uuid}")
+    @DeleteMapping("/")
     public ResponseEntity<?> DeleteFile() {
         return ResponseEntity.ok(null);
     }
