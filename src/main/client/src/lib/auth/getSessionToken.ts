@@ -1,5 +1,7 @@
+export const SESSION_TOKEN = "session-token";
+
 export function getSessionToken(): string {
-    const session = sessionStorage.getItem("session-token");
+    const session = sessionStorage.getItem(SESSION_TOKEN);
     if (!session || !session.length) throw new Error("No Session token.");
 
     const data = session.split(".")[1];

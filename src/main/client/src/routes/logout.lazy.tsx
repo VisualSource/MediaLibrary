@@ -1,7 +1,11 @@
-import Button from "@/components/Button";
-import { createLazyFileRoute } from "@tanstack/react-router";
+import { useAuth } from "@/hooks/useAuth";
+import { createLazyFileRoute, useNavigate } from "@tanstack/react-router";
+import Button from "@ui/Button";
 
 const Logout: React.FC = () => {
+    const navigate = useNavigate();
+    const auth = useAuth();
+
     return (
         <div className="grid grid-cols-1 md:grid-cols-2 grid-rows-none h-full">
             <div className="bg-slate-900 hidden md:block relative">
@@ -12,9 +16,12 @@ const Logout: React.FC = () => {
             <div className="flex flex-col justify-center items-center relative h-full space-y-6">
                 <h1 className="text-2xl font-semibold tracking-tight">Click to logout</h1>
 
-                <form className="flex flex-col space-y-6 w-1/4" method="post" action={`${import.meta.env.VITE_API_BASE_URL}/logout`}>
-                    <Button className="bg-neutral-50 text-neutral-950 hover:bg-neutral-50/90 h-10 px-4 py-2" type="submit">Logout</Button>
-                </form>
+                <div className="flex flex-col space-y-6 w-1/4">
+                    <Button className="bg-neutral-50 text-neutral-950 hover:bg-neutral-50/90 h-10 px-4 py-2" onClick={() => {
+                        auth.setToken(null);
+                        navigate({ to: "/login" });
+                    }}>Logout</Button>
+                </div>
             </div>
         </div>
     );

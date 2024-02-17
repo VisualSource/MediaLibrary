@@ -1,5 +1,6 @@
 package us.visualsource.media_entertainment_app.repository;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -9,8 +10,10 @@ import us.visualsource.media_entertainment_app.models.Bookmark;
 
 public interface BookmarkRepository extends JpaRepository<Bookmark, Long> {
 
-    @Query(value = "SELECT * FROM bookmarks WHERE media_id = :media AND owner_id = :owner",
-            nativeQuery = true)
-    Optional<Bookmark> findByMediaAndOwner(@Param("media") UUID media_id,
-            @Param("owner") Long owner_id);
+        @Query(value = "SELECT * FROM bookmarks WHERE media_id = :media AND owner_id = :owner",
+                        nativeQuery = true)
+        Optional<Bookmark> findByMediaAndOwner(@Param("media") UUID media_id,
+                        @Param("owner") Long owner_id);
+
+        List<Bookmark> findAllByOwnerId(Long owner_id);
 }

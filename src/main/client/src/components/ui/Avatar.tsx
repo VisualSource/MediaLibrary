@@ -1,6 +1,6 @@
-import { cn } from '@/lib/utils';
 import { User2 } from 'lucide-react';
 import { useState } from 'react';
+import { cn } from '@/lib/utils';
 
 const Avatar: React.FC<{ className?: string, url: string | undefined, alt?: string }> = ({ className, url, alt }) => {
     const [loaded, setLoaded] = useState(false);

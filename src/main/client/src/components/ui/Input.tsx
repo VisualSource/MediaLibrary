@@ -1,5 +1,5 @@
-import { cn } from "@/lib/utils";
 import { forwardRef } from "react";
+import { cn } from "@/lib/utils";
 
 const Input = forwardRef<HTMLInputElement, React.InputHTMLAttributes<never>>(({ className, ...props }, ref) => {
     return (

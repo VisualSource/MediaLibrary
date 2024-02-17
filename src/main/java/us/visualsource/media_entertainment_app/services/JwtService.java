@@ -18,6 +18,7 @@ import us.visualsource.media_entertainment_app.services.impl.UserDetailsImpl;
 public class JwtService {
     public static final String SECRET =
             "357638792F423F4428472B4B6250655368566D597133743677397A2443264629";
+    private final Integer TOKEN_LIFE_TIME = 1000 * 60 * 25;
 
     public String extractSubject(String token) {
         return extractClaim(token, Claims::getSubject);
@@ -65,7 +66,7 @@ public class JwtService {
     public String createToken(Map<String, Object> claims, String subject) {
         return Jwts.builder().claims(claims).subject(subject)
                 .issuedAt(new Date(System.currentTimeMillis()))
-                .expiration(new Date(System.currentTimeMillis() + 1000 * 60 * 25))
+                .expiration(new Date(System.currentTimeMillis() + TOKEN_LIFE_TIME))
                 .signWith(getSignKey()).compact();
     }
 }

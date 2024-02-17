@@ -2,7 +2,9 @@ import { useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from 'react';
 import { useDebounce } from "use-debounce";
 import { SearchIcon } from 'lucide-react';
-import Input from './Input';
+
+import { EVENT_SEARCH_PLACEHOLDER_KEY } from "@event/emitSearchPlaceholder";
+import Input from '@ui/Input';
 
 const Search: React.FC = () => {
     const navigate = useNavigate();
@@ -15,8 +17,8 @@ const Search: React.FC = () => {
             const { value } = (e as CustomEvent<{ value: string }>).detail;
             setPlaceholder(value);
         }
-        window.addEventListener("event-set-search-placeholder", callback);
-        return () => window.removeEventListener("event-set-search-placeholder", callback);
+        window.addEventListener(EVENT_SEARCH_PLACEHOLDER_KEY, callback);
+        return () => window.removeEventListener(EVENT_SEARCH_PLACEHOLDER_KEY, callback);
     }, []);
 
     useEffect(() => {

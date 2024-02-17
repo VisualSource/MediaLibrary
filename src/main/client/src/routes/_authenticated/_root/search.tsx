@@ -1,18 +1,19 @@
 import { createFileRoute } from "@tanstack/react-router";
-import CardGroup from "@/components/CardGroup";
-import { getSessionToken } from "@/lib/getSessionToken";
-import { MediaItem } from "@/lib/types";
-import Card, { CardContent } from "@/components/Card";
-import { useAuth } from "@/hooks/useAuth";
+import { getSessionToken } from "@auth/getSessionToken";
+import emitLeaveSearch from "@event/emitLeaveSearch";
+import useBookmarks from "@hook/useBookmarks";
+import Card, { CardContent } from "@ui/Card";
+import { MediaItem } from "@lib/types";
+import CardGroup from "@ui/CardGroup";
 
 const Search: React.FC = () => {
-    const auth = useAuth();
+    const bookmarks = useBookmarks();
     const { title, data } = Route.useLoaderData();
 
     return (
         <CardGroup title={title}>
             {data.map(e => (
-                <Card query={[]} key={e.uuid} id={e.uuid} bookmarked={e.bookmarks.findIndex(e => e.owner.jwt_id === auth.user.data?.jwt_id) !== -1} background={{ url: e.thumbnail, alt: "", color: e.fallbackColor }}>
+                <Card key={e.uuid} id={e.uuid} bookmarked={bookmarks.data?.findIndex(b => b.media.uuid === e.uuid) !== -1} background={{ url: e.thumbnail, alt: "", color: e.fallbackColor }}>
                     <CardContent className="pt-2" ratingClassName="inline-flex" titleClassName="text-base md:text-lg" title={e.name} year={e.releaseYear.toString()} type={e.mediaType} rating={e.rating} />
                 </Card>
             ))}
@@ -61,6 +62,6 @@ export const Route = createFileRoute("/_authenticated/_root/search")({
         }
     },
     onLeave() {
-        window.dispatchEvent(new CustomEvent("event-leave-search"));
+        emitLeaveSearch();
     }
 });

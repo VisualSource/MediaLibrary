@@ -16,7 +16,12 @@
     "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"],
-      "@/components/*": ["./src/components/*"]
+      "@component/*": ["./src/components/*"],
+      "@ui/*": ["./src/components/ui/*"],
+      "@event/*": ["./src/lib/event/*"],
+      "@auth/*": ["./src/lib/auth/*"],
+      "@hook/*": ["./src/hooks/*"],
+      "@lib/*": ["./src/lib/*"]
     },
 
     /* Linting */
