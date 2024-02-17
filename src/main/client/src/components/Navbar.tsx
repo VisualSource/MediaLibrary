@@ -1,6 +1,6 @@
 import { Bookmark, Tv, Film, LayoutGrid, Clapperboard } from 'lucide-react';
 import { Link } from "@tanstack/react-router";
-import { useAuth } from '@/hooks/useAuth';
+import useAuth from '@hook/useAuth';
 import Avatar from "@ui/Avatar";
 
 const Navbar: React.FC = () => {

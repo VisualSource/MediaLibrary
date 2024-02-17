@@ -1,6 +1,5 @@
 package us.visualsource.media_entertainment_app.models;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIncludeProperties;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -19,7 +18,7 @@ public class Bookmark {
     @Getter
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "owner_id", nullable = false)
-    @JsonIncludeProperties({"jwt_id"})
+    @JsonIncludeProperties({"jwtId"})
     private User owner;
 
     @Getter

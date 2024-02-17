@@ -20,15 +20,13 @@ import { Route as AuthenticatedRootSeriesImport } from './routes/_authenticated/
 import { Route as AuthenticatedRootSearchImport } from './routes/_authenticated/_root/search'
 import { Route as AuthenticatedRootMoviesImport } from './routes/_authenticated/_root/movies'
 import { Route as AuthenticatedRootBookmarkedImport } from './routes/_authenticated/_root/bookmarked'
+import { Route as AuthenticatedRootAccountImport } from './routes/_authenticated/_root/account'
 
 // Create Virtual Routes
 
 const SignupLazyImport = createFileRoute('/signup')()
 const LogoutLazyImport = createFileRoute('/logout')()
 const LoginLazyImport = createFileRoute('/login')()
-const AuthenticatedAccountLazyImport = createFileRoute(
-  '/_authenticated/account',
-)()
 
 // Create/Update Routes
 
@@ -51,13 +49,6 @@ const AuthenticatedRoute = AuthenticatedImport.update({
   id: '/_authenticated',
   getParentRoute: () => rootRoute,
 } as any)
-
-const AuthenticatedAccountLazyRoute = AuthenticatedAccountLazyImport.update({
-  path: '/account',
-  getParentRoute: () => AuthenticatedRoute,
-} as any).lazy(() =>
-  import('./routes/_authenticated/account.lazy').then((d) => d.Route),
-)
 
 const AuthenticatedRootRoute = AuthenticatedRootImport.update({
   id: '/_root',
@@ -90,6 +81,11 @@ const AuthenticatedRootBookmarkedRoute =
     getParentRoute: () => AuthenticatedRootRoute,
   } as any)
 
+const AuthenticatedRootAccountRoute = AuthenticatedRootAccountImport.update({
+  path: '/account',
+  getParentRoute: () => AuthenticatedRootRoute,
+} as any)
+
 // Populate the FileRoutesByPath interface
 
 declare module '@tanstack/react-router' {
@@ -114,9 +110,9 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedRootImport
       parentRoute: typeof AuthenticatedImport
     }
-    '/_authenticated/account': {
-      preLoaderRoute: typeof AuthenticatedAccountLazyImport
-      parentRoute: typeof AuthenticatedImport
+    '/_authenticated/_root/account': {
+      preLoaderRoute: typeof AuthenticatedRootAccountImport
+      parentRoute: typeof AuthenticatedRootImport
     }
     '/_authenticated/_root/bookmarked': {
       preLoaderRoute: typeof AuthenticatedRootBookmarkedImport
@@ -146,13 +142,13 @@ declare module '@tanstack/react-router' {
 export const routeTree = rootRoute.addChildren([
   AuthenticatedRoute.addChildren([
     AuthenticatedRootRoute.addChildren([
+      AuthenticatedRootAccountRoute,
       AuthenticatedRootBookmarkedRoute,
       AuthenticatedRootMoviesRoute,
       AuthenticatedRootSearchRoute,
       AuthenticatedRootSeriesRoute,
       AuthenticatedRootIndexRoute,
     ]),
-    AuthenticatedAccountLazyRoute,
   ]),
   LoginLazyRoute,
   LogoutLazyRoute,

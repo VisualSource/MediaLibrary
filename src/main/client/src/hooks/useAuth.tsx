@@ -9,12 +9,12 @@ type User = {
     email: string;
     roles: string[];
     id: number;
-    jwt_id: string;
+    jwtId: string;
 }
 
 const QUERY_USER = "USER";
 
-export const useAuth = () => {
+const useAuth = () => {
     const queryClient = useQueryClient();
     const rawValueRef = useRef<string | null>(null);
     const [session, setSession] = useState(() => {
@@ -22,7 +22,6 @@ export const useAuth = () => {
             rawValueRef.current = getSessionToken();
             return rawValueRef.current;
         } catch (error) {
-            console.error(error);
             return null;
         }
     });
@@ -59,6 +58,9 @@ export const useAuth = () => {
     return {
         session,
         user: data,
+        get canLoad() {
+            return !(session === null || data.isLoading || data.isError)
+        },
         isAuthenticated: () => session !== null,
         setToken(token: string | null) {
 
@@ -76,3 +78,5 @@ export const useAuth = () => {
         }
     };
 }
+
+export default useAuth;

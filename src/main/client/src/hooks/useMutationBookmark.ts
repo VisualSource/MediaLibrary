@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { QUERY_BOOKMARKS, type Bookmark } from "@hook/useBookmarks";
-import { useAuth } from "@hook/useAuth";
+import useAuth from "@hook/useAuth";
 
 type BookmarkState = {
     state: boolean;
@@ -16,7 +16,7 @@ const useMutationBookmark = () => {
     const auth = useAuth();
     const queryClient = useQueryClient();
 
-    const uuid = auth.user.data?.jwt_id;
+    const uuid = auth.user.data?.jwtId;
 
     const mutation = useMutation({
         mutationFn: async ({ id }: MutationRequest) => {
@@ -42,10 +42,12 @@ const useMutationBookmark = () => {
 
             const previousBookmarks = queryClient.getQueryData([QUERY_BOOKMARKS, uuid]);
 
-            queryClient.setQueryData([QUERY_BOOKMARKS, uuid], (old: Bookmark[]) => {
+            queryClient.setQueryData([QUERY_BOOKMARKS, uuid], (old: Bookmark[] | undefined) => {
+                if (!old) return { id: -1, media: { uuid: id }, owner: { jwtId: uuid } } as Bookmark
+
                 if (state) return [...old.filter(e => e.media.uuid !== id)]
-                return [...old, { id: -1, media: { uuid: id }, owner: { jet_id: auth.user.data?.jwt_id } } as Bookmark];
-            });
+                return [...old, { id: -1, media: { uuid: id }, owner: { jwtId: uuid } } as Bookmark];
+            })
 
             return { previousBookmarks }
         },

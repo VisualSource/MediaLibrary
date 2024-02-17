@@ -1,4 +1,4 @@
-import { useAuth } from "@/hooks/useAuth";
+import useAuth from "@/hooks/useAuth";
 import { createLazyFileRoute, useNavigate } from "@tanstack/react-router";
 import Button from "@ui/Button";
 

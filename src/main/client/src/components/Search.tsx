@@ -3,22 +3,29 @@ import { useEffect, useState } from 'react';
 import { useDebounce } from "use-debounce";
 import { SearchIcon } from 'lucide-react';
 
-import { EVENT_SEARCH_PLACEHOLDER_KEY } from "@event/emitSearchPlaceholder";
+import { EVENT_SEARCH_PARAMS_KEY } from "@event/emitSearchParams";
 import Input from '@ui/Input';
+
+
 
 const Search: React.FC = () => {
     const navigate = useNavigate();
-    const [placeholder, setPlaceholder] = useState("Search for movies or TV series");
+    const [placeholder, setPlaceHolder] = useState("Search for movies or TV series");
+    const [searchParams, setSearchParams] = useState<{ bookmarked: boolean, type: string | undefined }>({
+        bookmarked: false,
+        type: undefined
+    });
     const [query, setQuery] = useState<string>("");
     const [value] = useDebounce(query, 500);
 
     useEffect(() => {
         const callback = (e: Event) => {
-            const { value } = (e as CustomEvent<{ value: string }>).detail;
-            setPlaceholder(value);
+            const data = (e as CustomEvent<{ bookmarked: boolean, placeholder: string, type: string | undefined }>).detail;
+            setPlaceHolder(data.placeholder);
+            setSearchParams({ bookmarked: data.bookmarked, type: data.type });
         }
-        window.addEventListener(EVENT_SEARCH_PLACEHOLDER_KEY, callback);
-        return () => window.removeEventListener(EVENT_SEARCH_PLACEHOLDER_KEY, callback);
+        window.addEventListener(EVENT_SEARCH_PARAMS_KEY, callback);
+        return () => window.removeEventListener(EVENT_SEARCH_PARAMS_KEY, callback);
     }, []);
 
     useEffect(() => {
@@ -31,9 +38,9 @@ const Search: React.FC = () => {
         if (value.length > 1)
             navigate({
                 to: "/search",
-                search: { q: value, type: null }
+                search: { q: value, type: searchParams.type, bookmarked: searchParams.bookmarked }
             });
-    }, [value, navigate]);
+    }, [value, searchParams, navigate]);
 
     return (
         <search className='flex gap-2 items-center pl-6 py-6 md:py-4 lg:pt-12 lg:px-2'>
