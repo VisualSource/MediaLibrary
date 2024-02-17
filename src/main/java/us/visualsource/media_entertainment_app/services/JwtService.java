@@ -4,22 +4,27 @@ import java.security.Key;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 import java.util.function.Function;
 import javax.crypto.SecretKey;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import us.visualsource.media_entertainment_app.services.impl.UserDetailsImpl;
 
 @Component
 public class JwtService {
     public static final String SECRET =
             "357638792F423F4428472B4B6250655368566D597133743677397A2443264629";
 
-    public String extractUsername(String token) {
+    public String extractSubject(String token) {
         return extractClaim(token, Claims::getSubject);
+    }
+
+    public UUID extractSubjectAsUUID(String token) {
+        return UUID.fromString(extractSubject(token));
     }
 
     public Date extractExpiration(String token) {
@@ -46,19 +51,19 @@ public class JwtService {
         return extractExpiration(token).before(new Date());
     }
 
-    public Boolean validateToken(String token, UserDetails userDetails) {
-        final String username = extractUsername(token);
-        return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
+    public Boolean validateToken(String token, UserDetailsImpl userDetails) {
+        final UUID uuid = extractSubjectAsUUID(token);
+        return (uuid.equals(userDetails.getJwtId()) && !isTokenExpired(token));
     }
 
 
-    public String GenerateToken(String username) {
+    public String GenerateToken(UUID id) {
         Map<String, Object> claims = new HashMap<>();
-        return createToken(claims, username);
+        return createToken(claims, id.toString());
     }
 
-    public String createToken(Map<String, Object> claims, String username) {
-        return Jwts.builder().claims(claims).subject(username)
+    public String createToken(Map<String, Object> claims, String subject) {
+        return Jwts.builder().claims(claims).subject(subject)
                 .issuedAt(new Date(System.currentTimeMillis()))
                 .expiration(new Date(System.currentTimeMillis() + 1000 * 60 * 25))
                 .signWith(getSignKey()).compact();

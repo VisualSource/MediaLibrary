@@ -1,8 +1,10 @@
 import { Bookmark, Tv, Film, LayoutGrid, Clapperboard } from 'lucide-react';
 import { Link } from "@tanstack/react-router";
 import Avatar from "./Avatar";
+import { useAuth } from '@/hooks/useAuth';
 
 const Navbar: React.FC = () => {
+    const auth = useAuth();
     return (
         <div className="md:px-6 md:pt-6 lg:p-8 lg:pr-6">
             <nav className="bg-slate-900 text-neutral-500 flex justify-between lg:justify-normal items-center gap-16 px-4 w-full h-16 lg:w-20 lg:flex-col lg:px-0 lg:py-7 lg:h-full md:rounded-2xl">
@@ -34,7 +36,7 @@ const Navbar: React.FC = () => {
                 </div>
 
                 <Link to="/account" className="lg:mt-auto">
-                    <Avatar className="h-8 w-8 lg:h-10 lg:w-10" url="https://images.unsplash.com/photo-1655834648155-f7a98ff3c49d?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHx0b3BpYy1mZWVkfDcxfGJvOGpRS1RhRTBZfHxlbnwwfHx8fHw%3D" />
+                    <Avatar className="h-8 w-8 lg:h-10 lg:w-10" url={auth.user.data?.avatar} />
                 </Link>
             </nav>
         </div>

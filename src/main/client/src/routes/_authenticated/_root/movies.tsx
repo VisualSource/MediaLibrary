@@ -1,11 +1,13 @@
 import Card, { CardContent } from "@/components/Card";
 import CardGroup from "@/components/CardGroup";
+import { useAuth } from "@/hooks/useAuth";
 import { getSessionToken } from "@/lib/getSessionToken";
 import { MediaItem } from "@/lib/types";
 import { useQuery } from "@tanstack/react-query";
-import { createLazyFileRoute } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 
 const Movies: React.FC = () => {
+    const auth = useAuth();
     const movies = useQuery({
         queryKey: ["MOVIES"],
         queryFn: async () => {
@@ -23,7 +25,7 @@ const Movies: React.FC = () => {
             {movies.isLoading ? (<></>) :
                 movies.isError ? (<></>) :
                     movies.data?.map(e => (
-                        <Card key={e.uuid} id={e.uuid} bookmarked={true} background={{ url: e.thumbnail, alt: "", color: e.fallbackColor }}>
+                        <Card query={["MOVIES"]} key={e.uuid} id={e.uuid} bookmarked={e.bookmarks.findIndex(e => e.owner.jwt_id === auth.user.data?.jwt_id) !== -1} background={{ url: e.thumbnail, alt: "", color: e.fallbackColor }}>
                             <CardContent className="pt-2" ratingClassName="inline-flex" titleClassName="text-base md:text-lg" title={e.name} year={e.releaseYear.toString()} type={e.mediaType} rating={e.rating} />
                         </Card>
                     ))}
@@ -31,6 +33,9 @@ const Movies: React.FC = () => {
     );
 }
 
-export const Route = createLazyFileRoute("/_authenticated/_root/movies")({
-    component: Movies
+export const Route = createFileRoute("/_authenticated/_root/movies")({
+    component: Movies,
+    onEnter() {
+        window.dispatchEvent(new CustomEvent("event-set-search-placeholder", { detail: { value: "Search Movies" } }));
+    }
 });

@@ -1,24 +1,18 @@
 package us.visualsource.media_entertainment_app.dto.response;
 
-import java.util.Date;
-import org.springframework.format.annotation.DateTimeFormat;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@Data
 public class ErrorResponse {
-    private String message;
-
-    @DateTimeFormat(pattern = "yyyy-MM-dd hh:mm:ss a")
-    @Builder.Default
-    Date timestamp = new Date();
-
+    /** the HTTP response code (optional) */
     private Integer status;
-
-    private String path;
+    /** a list of errors */
+    private List<Error> errors;
 }

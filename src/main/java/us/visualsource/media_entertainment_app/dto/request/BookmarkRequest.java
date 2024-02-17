@@ -12,6 +12,4 @@ import lombok.NoArgsConstructor;
 public class BookmarkRequest {
     @NotNull
     private UUID item;
-    @NotNull
-    private boolean state;
 }

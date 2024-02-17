@@ -4,12 +4,12 @@ import { useAuth } from "@/hooks/useAuth";
 import { getSessionToken } from "@/lib/getSessionToken";
 import { MediaItem } from "@/lib/types";
 import { useQuery } from "@tanstack/react-query";
-import { createLazyFileRoute } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 
 const Bookmarked: React.FC = () => {
     const auth = useAuth();
     const bookmarkedMovies = useQuery({
-        queryKey: ["BOOKMARKED_MOVIES", "USER_ID"],
+        queryKey: ["BOOKMARKED_MOVIES", auth.user.data?.id],
         queryFn: async () => {
             const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/media?bookmarked=true&type=movie`, {
                 headers: {
@@ -18,11 +18,12 @@ const Bookmarked: React.FC = () => {
             });
             if (!response.ok) throw response;
             return response.json() as Promise<MediaItem[]>;
-        }
+        },
+        enabled: !(auth.user.isLoading || auth.user.isError)
     });
 
     const bookmarkedTvSeries = useQuery({
-        queryKey: ["BOOKMARKED_SERIRS", "USER_ID"],
+        queryKey: ["BOOKMARKED_SERIRS", auth.user.data?.id],
         queryFn: async () => {
             const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/media?bookmarked=true&type=series`, {
                 headers: {
@@ -31,7 +32,8 @@ const Bookmarked: React.FC = () => {
             });
             if (!response.ok) throw response;
             return response.json() as Promise<MediaItem[]>;
-        }
+        },
+        enabled: !(auth.user.isLoading || auth.user.isError)
     });
 
 
@@ -59,6 +61,9 @@ const Bookmarked: React.FC = () => {
     );
 }
 
-export const Route = createLazyFileRoute("/_authenticated/_root/bookmarked")({
-    component: Bookmarked
+export const Route = createFileRoute("/_authenticated/_root/bookmarked")({
+    component: Bookmarked,
+    onEnter() {
+        window.dispatchEvent(new CustomEvent("event-set-search-placeholder", { detail: { value: "Search bookmarked Movies and TV series" } }));
+    }
 });

@@ -8,4 +8,5 @@ export type MediaItem = {
     thumbnail: string;
     fallbackColor: string;
     contentPath: string;
+    bookmarks: { media: { uuid: string; }, owner: { jwt_id: string; } }[]
 }

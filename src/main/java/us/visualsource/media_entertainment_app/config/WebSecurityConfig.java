@@ -17,11 +17,10 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-import org.springframework.web.filter.CorsFilter;
-import us.visualsource.media_entertainment_app.security.JwtAuthFilter;
+import org.springframework.security.web.authentication.logout.LogoutFilter;
+import us.visualsource.media_entertainment_app.security.*;
 import us.visualsource.media_entertainment_app.services.impl.UserDetailsServiceImpl;
+
 
 @Configuration
 @EnableWebSecurity
@@ -31,9 +30,14 @@ public class WebSecurityConfig {
     @Autowired
     JwtAuthFilter jwtAuthFilter;
 
+    @Autowired
+    private FilterChainExceptionHandler filterChainExceptionHandler;
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        return http.csrf(e -> e.disable()).cors(Customizer.withDefaults())
+        // Load exception handler before every thing
+        return http.addFilterBefore(filterChainExceptionHandler, LogoutFilter.class)
+                .csrf(e -> e.disable()).cors(Customizer.withDefaults())
                 .authorizeHttpRequests(
                         e -> e.requestMatchers("/**", "/api/auth/login", "/api/auth/signup")
                                 .permitAll().requestMatchers("/api/**").authenticated())

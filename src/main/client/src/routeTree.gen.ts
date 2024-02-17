@@ -15,7 +15,11 @@ import { createFileRoute } from '@tanstack/react-router'
 import { Route as rootRoute } from './routes/__root'
 import { Route as AuthenticatedImport } from './routes/_authenticated'
 import { Route as AuthenticatedRootImport } from './routes/_authenticated/_root'
+import { Route as AuthenticatedRootIndexImport } from './routes/_authenticated/_root/index'
+import { Route as AuthenticatedRootSeriesImport } from './routes/_authenticated/_root/series'
 import { Route as AuthenticatedRootSearchImport } from './routes/_authenticated/_root/search'
+import { Route as AuthenticatedRootMoviesImport } from './routes/_authenticated/_root/movies'
+import { Route as AuthenticatedRootBookmarkedImport } from './routes/_authenticated/_root/bookmarked'
 
 // Create Virtual Routes
 
@@ -24,18 +28,6 @@ const LogoutLazyImport = createFileRoute('/logout')()
 const LoginLazyImport = createFileRoute('/login')()
 const AuthenticatedAccountLazyImport = createFileRoute(
   '/_authenticated/account',
-)()
-const AuthenticatedRootIndexLazyImport = createFileRoute(
-  '/_authenticated/_root/',
-)()
-const AuthenticatedRootSeriesLazyImport = createFileRoute(
-  '/_authenticated/_root/series',
-)()
-const AuthenticatedRootMoviesLazyImport = createFileRoute(
-  '/_authenticated/_root/movies',
-)()
-const AuthenticatedRootBookmarkedLazyImport = createFileRoute(
-  '/_authenticated/_root/bookmarked',
 )()
 
 // Create/Update Routes
@@ -72,45 +64,31 @@ const AuthenticatedRootRoute = AuthenticatedRootImport.update({
   getParentRoute: () => AuthenticatedRoute,
 } as any)
 
-const AuthenticatedRootIndexLazyRoute = AuthenticatedRootIndexLazyImport.update(
-  {
-    path: '/',
-    getParentRoute: () => AuthenticatedRootRoute,
-  } as any,
-).lazy(() =>
-  import('./routes/_authenticated/_root/index.lazy').then((d) => d.Route),
-)
+const AuthenticatedRootIndexRoute = AuthenticatedRootIndexImport.update({
+  path: '/',
+  getParentRoute: () => AuthenticatedRootRoute,
+} as any)
 
-const AuthenticatedRootSeriesLazyRoute =
-  AuthenticatedRootSeriesLazyImport.update({
-    path: '/series',
-    getParentRoute: () => AuthenticatedRootRoute,
-  } as any).lazy(() =>
-    import('./routes/_authenticated/_root/series.lazy').then((d) => d.Route),
-  )
-
-const AuthenticatedRootMoviesLazyRoute =
-  AuthenticatedRootMoviesLazyImport.update({
-    path: '/movies',
-    getParentRoute: () => AuthenticatedRootRoute,
-  } as any).lazy(() =>
-    import('./routes/_authenticated/_root/movies.lazy').then((d) => d.Route),
-  )
-
-const AuthenticatedRootBookmarkedLazyRoute =
-  AuthenticatedRootBookmarkedLazyImport.update({
-    path: '/bookmarked',
-    getParentRoute: () => AuthenticatedRootRoute,
-  } as any).lazy(() =>
-    import('./routes/_authenticated/_root/bookmarked.lazy').then(
-      (d) => d.Route,
-    ),
-  )
+const AuthenticatedRootSeriesRoute = AuthenticatedRootSeriesImport.update({
+  path: '/series',
+  getParentRoute: () => AuthenticatedRootRoute,
+} as any)
 
 const AuthenticatedRootSearchRoute = AuthenticatedRootSearchImport.update({
   path: '/search',
   getParentRoute: () => AuthenticatedRootRoute,
 } as any)
+
+const AuthenticatedRootMoviesRoute = AuthenticatedRootMoviesImport.update({
+  path: '/movies',
+  getParentRoute: () => AuthenticatedRootRoute,
+} as any)
+
+const AuthenticatedRootBookmarkedRoute =
+  AuthenticatedRootBookmarkedImport.update({
+    path: '/bookmarked',
+    getParentRoute: () => AuthenticatedRootRoute,
+  } as any)
 
 // Populate the FileRoutesByPath interface
 
@@ -140,24 +118,24 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAccountLazyImport
       parentRoute: typeof AuthenticatedImport
     }
+    '/_authenticated/_root/bookmarked': {
+      preLoaderRoute: typeof AuthenticatedRootBookmarkedImport
+      parentRoute: typeof AuthenticatedRootImport
+    }
+    '/_authenticated/_root/movies': {
+      preLoaderRoute: typeof AuthenticatedRootMoviesImport
+      parentRoute: typeof AuthenticatedRootImport
+    }
     '/_authenticated/_root/search': {
       preLoaderRoute: typeof AuthenticatedRootSearchImport
       parentRoute: typeof AuthenticatedRootImport
     }
-    '/_authenticated/_root/bookmarked': {
-      preLoaderRoute: typeof AuthenticatedRootBookmarkedLazyImport
-      parentRoute: typeof AuthenticatedRootImport
-    }
-    '/_authenticated/_root/movies': {
-      preLoaderRoute: typeof AuthenticatedRootMoviesLazyImport
-      parentRoute: typeof AuthenticatedRootImport
-    }
     '/_authenticated/_root/series': {
-      preLoaderRoute: typeof AuthenticatedRootSeriesLazyImport
+      preLoaderRoute: typeof AuthenticatedRootSeriesImport
       parentRoute: typeof AuthenticatedRootImport
     }
     '/_authenticated/_root/': {
-      preLoaderRoute: typeof AuthenticatedRootIndexLazyImport
+      preLoaderRoute: typeof AuthenticatedRootIndexImport
       parentRoute: typeof AuthenticatedRootImport
     }
   }
@@ -168,11 +146,11 @@ declare module '@tanstack/react-router' {
 export const routeTree = rootRoute.addChildren([
   AuthenticatedRoute.addChildren([
     AuthenticatedRootRoute.addChildren([
+      AuthenticatedRootBookmarkedRoute,
+      AuthenticatedRootMoviesRoute,
       AuthenticatedRootSearchRoute,
-      AuthenticatedRootBookmarkedLazyRoute,
-      AuthenticatedRootMoviesLazyRoute,
-      AuthenticatedRootSeriesLazyRoute,
-      AuthenticatedRootIndexLazyRoute,
+      AuthenticatedRootSeriesRoute,
+      AuthenticatedRootIndexRoute,
     ]),
     AuthenticatedAccountLazyRoute,
   ]),

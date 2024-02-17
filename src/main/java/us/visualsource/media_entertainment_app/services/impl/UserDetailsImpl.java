@@ -3,6 +3,7 @@ package us.visualsource.media_entertainment_app.services.impl;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -25,14 +26,21 @@ public class UserDetailsImpl implements UserDetails {
     @Getter
     private String password;
     @Getter
+    private UUID jwtId;
+
+    @Getter
+    private String avatar;
+
+    @Getter
     private Collection<? extends GrantedAuthority> authorities;
 
     public static UserDetailsImpl build(User user) {
         List<GrantedAuthority> authorities = user.getRoles().stream()
                 .map(role -> new SimpleGrantedAuthority(role.getName().name()))
                 .collect(Collectors.toList());
+
         return new UserDetailsImpl(user.getId(), user.getUsername(), user.getEmail(),
-                user.getPassword(), authorities);
+                user.getPassword(), user.getJwtId(), user.getAvatar(), authorities);
     }
 
     @Override

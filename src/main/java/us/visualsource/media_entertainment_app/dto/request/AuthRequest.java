@@ -1,10 +1,7 @@
 package us.visualsource.media_entertainment_app.dto.request;
 
-import jakarta.validation.constraints.NotBlank;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import jakarta.validation.constraints.*;
+import lombok.*;
 
 @Data
 @AllArgsConstructor
@@ -12,7 +9,8 @@ import lombok.NoArgsConstructor;
 @Builder
 public class AuthRequest {
     @NotBlank
-    private String username;
+    @Email
+    private String email;
     @NotBlank
     private String password;
 }

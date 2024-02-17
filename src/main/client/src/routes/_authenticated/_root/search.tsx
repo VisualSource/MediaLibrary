@@ -3,14 +3,16 @@ import CardGroup from "@/components/CardGroup";
 import { getSessionToken } from "@/lib/getSessionToken";
 import { MediaItem } from "@/lib/types";
 import Card, { CardContent } from "@/components/Card";
+import { useAuth } from "@/hooks/useAuth";
 
 const Search: React.FC = () => {
+    const auth = useAuth();
     const { title, data } = Route.useLoaderData();
 
     return (
         <CardGroup title={title}>
             {data.map(e => (
-                <Card key={e.uuid} id={e.uuid} bookmarked={false} background={{ url: e.thumbnail, alt: "", color: e.fallbackColor }}>
+                <Card query={[]} key={e.uuid} id={e.uuid} bookmarked={e.bookmarks.findIndex(e => e.owner.jwt_id === auth.user.data?.jwt_id) !== -1} background={{ url: e.thumbnail, alt: "", color: e.fallbackColor }}>
                     <CardContent className="pt-2" ratingClassName="inline-flex" titleClassName="text-base md:text-lg" title={e.name} year={e.releaseYear.toString()} type={e.mediaType} rating={e.rating} />
                 </Card>
             ))}

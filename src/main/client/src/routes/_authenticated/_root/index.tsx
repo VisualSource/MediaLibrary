@@ -2,12 +2,16 @@ import Card, { CardContent } from "@/components/Card";
 import CardGroup from "@/components/CardGroup";
 import CardWide from "@/components/CardWide";
 import { useQuery } from "@tanstack/react-query";
-import { createLazyFileRoute } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { type MediaItem } from '@/lib/types';
+import { useAuth } from "@/hooks/useAuth";
 
+const QUERY_RECOMMEDED = "RECOMMEDED";
+const QUERY_WATCHED = "WATCHED";
 const Index: React.FC = () => {
+    const auth = useAuth();
     const mediaWatched = useQuery({
-        queryKey: ["WATCHED"],
+        queryKey: [QUERY_WATCHED],
         queryFn: async () => {
             const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/media/watched`);
             if (!response.ok) throw response;
@@ -16,7 +20,7 @@ const Index: React.FC = () => {
     });
 
     const mediaRecommeded = useQuery({
-        queryKey: ["RECOMMEDED"],
+        queryKey: [QUERY_RECOMMEDED],
         queryFn: async () => {
             const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/media/recommeded`);
             if (!response.ok) throw response;
@@ -33,9 +37,9 @@ const Index: React.FC = () => {
                     {mediaRecommeded.isLoading ? (<></>) :
                         mediaRecommeded.isError ? (<></>) :
                             mediaWatched.data?.map(e => (
-                                <CardWide key={e.uuid}
-                                    bookmarked={false}
-                                    data={{ title: e.name, year: e.releaseYear, type: e.mediaType, rating: e.rating }}
+                                <CardWide query={[QUERY_RECOMMEDED]} key={e.uuid}
+                                    bookmarked={e.bookmarks.findIndex(e => e.owner.jwt_id === auth.user.data?.jwt_id) !== -1}
+                                    data={{ id: e.uuid, title: e.name, year: e.releaseYear, type: e.mediaType, rating: e.rating }}
                                     background={{ alt: "", color: e.fallbackColor, url: e.thumbnail }}
                                 />
                             ))}
@@ -45,7 +49,7 @@ const Index: React.FC = () => {
                 {mediaWatched.isLoading ? (<></>) :
                     mediaWatched.isError ? (<></>) :
                         mediaRecommeded.data?.map(e => (
-                            <Card key={e.uuid} id={e.uuid} bookmarked={false} background={{ url: e.thumbnail, alt: "", color: e.fallbackColor }}>
+                            <Card query={[QUERY_RECOMMEDED]} key={e.uuid} id={e.uuid} bookmarked={e.bookmarks.findIndex(e => e.owner.jwt_id === auth.user.data?.jwt_id) !== -1} background={{ url: e.thumbnail, alt: "", color: e.fallbackColor }}>
                                 <CardContent className="pt-2" ratingClassName="inline-flex" titleClassName="text-base md:text-lg" title={e.name} year={e.releaseYear.toString()} type={e.mediaType} rating={e.rating} />
                             </Card>
                         ))}
@@ -54,6 +58,9 @@ const Index: React.FC = () => {
     );
 }
 
-export const Route = createLazyFileRoute("/_authenticated/_root/")({
-    component: Index
+export const Route = createFileRoute("/_authenticated/_root/")({
+    component: Index,
+    onEnter() {
+        window.dispatchEvent(new CustomEvent("event-set-search-placeholder", { detail: { value: "Search Movies and Tv series" } }));
+    }
 });

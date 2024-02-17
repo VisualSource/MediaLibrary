@@ -1,15 +1,28 @@
-export const bookmark = async (id: string) => {
-    const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/bookmark`, {
-        method: "PATCH",
-        body: JSON.stringify({
-            id
-        }),
-        headers: {
-            "Content-Type": "application/json"
-        }
-    });
+import { getSessionToken } from "./getSessionToken";
+import { queryClient } from "./QueryClient";
 
-    const data = await response.json() as { state: boolean };
+export const bookmark = async (id: string, state: boolean, query: string[]) => {
+    try {
+        const token = getSessionToken();
 
-    return data.state;
+        const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/bookmark`, {
+            method: "PATCH",
+            body: JSON.stringify({
+                item: id,
+            }),
+            headers: {
+                "Authorization": `Bearer ${token}`,
+                "Content-Type": "application/json"
+            }
+        });
+
+        const data = await response.json() as { state: boolean };
+
+        queryClient.invalidateQueries({ queryKey: query });
+
+        return data.state;
+    } catch (error) {
+        console.error(error);
+        return state;
+    }
 }

@@ -1,6 +1,7 @@
 package us.visualsource.media_entertainment_app.dto.response;
 
 import java.util.List;
+import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -16,4 +17,5 @@ public class UserResponse {
     private String email;
     private List<String> roles;
     private long id;
+    private UUID jwtId;
 }

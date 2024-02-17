@@ -55,12 +55,15 @@ public class Media {
     @NotBlank(message = "A content path is required.")
     private String contentPath;
 
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true,
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true,
             mappedBy = "media")
     @Getter
     @Setter
-    @JsonIgnore
     private Set<Bookmark> bookmarks = new HashSet<>();
+
+    @Getter
+    @Setter
+    private Boolean isBookmarked = false;
 
     public Media(String name, Long releaseYear, String mediaType, String rating, String contentType,
             String thumbnail, String fallbackColor, String contentPath) {
