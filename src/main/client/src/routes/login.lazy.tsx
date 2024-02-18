@@ -6,6 +6,7 @@ import { cn } from "@/lib/utils";
 import Button from "@ui/Button";
 import Input from "@ui/Input";
 import Label from "@ui/Label";
+import { AuthError } from "@/lib/auth/context";
 
 type FormState = {
     email: string;
@@ -15,33 +16,20 @@ type FormState = {
 const Login: React.FC = () => {
     const { handleSubmit, register, formState: { errors, isSubmitting }, setError } = useForm<FormState>()
     const navigate = useNavigate();
-    const auth = useAuth();
+    const { ctx } = useAuth();
 
     const onSubmit = async (state: FormState) => {
         try {
-            const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/auth/login`, {
-                body: JSON.stringify(state),
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                method: "POST"
-            });
-
-            if (!response.ok) {
-                if (response.status === 403) {
-                    setError("password", { message: "Invalid password" });
-                    setError("email", { message: "Invaild email." });
-                }
-
-                throw response;
-            }
-
-            const { accessToken } = await response.json() as { accessToken: string };
-            auth.setToken(accessToken);
+            await ctx.login(state);
 
             navigate({ to: "/" });
         } catch (error) {
-            console.error(error);
+            if (error instanceof AuthError && error.cause instanceof Response && error.cause.status === 403) {
+                setError("email", { message: "Invalid email" });
+                setError("password", { message: "Invalid password" });
+            } else {
+                console.error(error);
+            }
         }
     }
 

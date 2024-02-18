@@ -1,10 +1,18 @@
 import { createFileRoute, redirect } from "@tanstack/react-router";
-import isAuthenticated from "@auth/isAuthenticated";
+
 
 export const Route = createFileRoute("/_authenticated")({
-    beforeLoad({ location }) {
-        // do auth check
-        if (!isAuthenticated()) throw redirect({
+    async beforeLoad({ context, location }) {
+        await new Promise<void>((ok) => {
+            const interval = setInterval(() => {
+                if (!context.auth.isLoading) {
+                    clearInterval(interval);
+                    ok();
+                }
+            }, 1000);
+        });
+
+        if (!context.auth.isAuthenticated()) throw redirect({
             to: "/login",
             search: {
                 redirect: location.href

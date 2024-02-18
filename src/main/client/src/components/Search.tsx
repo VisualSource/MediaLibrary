@@ -6,8 +6,6 @@ import { SearchIcon } from 'lucide-react';
 import { EVENT_SEARCH_PARAMS_KEY } from "@event/emitSearchParams";
 import Input from '@ui/Input';
 
-
-
 const Search: React.FC = () => {
     const navigate = useNavigate();
     const [placeholder, setPlaceHolder] = useState("Search for movies or TV series");

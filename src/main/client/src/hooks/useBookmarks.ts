@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query"
 import useAuth from "@hook/useAuth";
 
+
 export type Bookmark = {
     id: number;
     owner: {
@@ -14,15 +15,16 @@ export type Bookmark = {
 export const QUERY_BOOKMARKS = "BOOKMARKS";
 
 const useBookmarks = () => {
-    const auth = useAuth();
+    const { ctx, user, } = useAuth();
     const { data, isError, error, isLoading } = useQuery({
-        queryKey: [QUERY_BOOKMARKS, auth.user.data?.jwtId],
-        enabled: auth.canLoad,
+        queryKey: [QUERY_BOOKMARKS, user?.jwtId],
+        enabled: !ctx.isLoading && ctx.isAuthenticated(),
         queryFn: async () => {
-
+            const tokens = await ctx.getSession();
+            if (!tokens) throw new Error("Unable to make request");
             const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/bookmarks`, {
                 headers: {
-                    "Authorization": `Bearer ${auth.session}`
+                    "Authorization": `Bearer ${tokens.accessToken}`
                 }
             });
 

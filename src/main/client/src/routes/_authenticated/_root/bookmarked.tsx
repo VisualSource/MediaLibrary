@@ -14,14 +14,12 @@ const Bookmarked: React.FC = () => {
     const auth = useAuth();
 
     const bookmarkedMovies = useMediaQuery<MediaItem[]>({
-        queryKey: [QUERY_BOOKMARKED_MOVIES, auth.user.data?.jwtId],
-        enabled: auth.canLoad,
+        queryKey: [QUERY_BOOKMARKED_MOVIES, auth.user?.jwtId],
         searchParams: "?bookmarked=true&type=movie"
     });
 
     const bookmarkedTvSeries = useMediaQuery<MediaItem[]>({
-        queryKey: [QUERY_BOOKMARKED_SERIES, auth.user.data?.jwtId],
-        enabled: auth.canLoad,
+        queryKey: [QUERY_BOOKMARKED_SERIES, auth.user?.jwtId],
         searchParams: "?bookmarked=true&type=series"
     });
 

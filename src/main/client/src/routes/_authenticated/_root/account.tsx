@@ -13,10 +13,10 @@ const Account: React.FC = () => {
 
             </div>
 
-            <Avatar className="h-36 w-36" url={auth.user.data?.avatar} />
+            <Avatar className="h-36 w-36" url={auth.user?.avatar} />
             <div className="flex flex-col items-center p-2">
-                <h1 className="font-bold text-xl">{auth.user.data?.username}</h1>
-                <p className="text-neutral-600 text-sm leading-4 tracking-tight">{auth.user.data?.email}</p>
+                <h1 className="font-bold text-xl">{auth.user?.username}</h1>
+                <p className="text-neutral-600 text-sm leading-4 tracking-tight">{auth.user?.email}</p>
             </div>
 
         </div>

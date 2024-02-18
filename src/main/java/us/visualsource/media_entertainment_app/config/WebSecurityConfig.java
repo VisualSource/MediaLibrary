@@ -38,9 +38,10 @@ public class WebSecurityConfig {
         // Load exception handler before every thing
         return http.addFilterBefore(filterChainExceptionHandler, LogoutFilter.class)
                 .csrf(e -> e.disable()).cors(Customizer.withDefaults())
-                .authorizeHttpRequests(
-                        e -> e.requestMatchers("/**", "/api/auth/login", "/api/auth/signup")
-                                .permitAll().requestMatchers("/api/**").authenticated())
+                .authorizeHttpRequests(e -> e
+                        .requestMatchers("/**", "/api/auth/login", "/api/auth/signup",
+                                "api/auth/refresh")
+                        .permitAll().requestMatchers("/api/**").authenticated())
                 .sessionManagement(e -> e.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider())
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class).build();

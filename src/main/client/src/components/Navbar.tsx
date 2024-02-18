@@ -36,7 +36,7 @@ const Navbar: React.FC = () => {
                 </div>
 
                 <Link to="/account" className="lg:mt-auto">
-                    <Avatar className="h-8 w-8 lg:h-10 lg:w-10" url={auth.user.data?.avatar} />
+                    <Avatar className="h-8 w-8 lg:h-10 lg:w-10" url={auth.user?.avatar} />
                 </Link>
             </nav>
         </div>

@@ -1,6 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
 import CardSkeletion from "@/components/ui/CardSkeletion";
-import { getSessionToken } from "@auth/getSessionToken";
 import emitLeaveSearch from "@event/emitLeaveSearch";
 import useBookmarks from "@hook/useBookmarks";
 import Card, { CardContent } from "@ui/Card";
@@ -75,7 +74,7 @@ export const Route = createFileRoute("/_authenticated/_root/search")({
         };
     },
     loaderDeps: ({ search: { q, type, bookmarked } }) => ({ bookmarked, q, type }),
-    loader: async ({ deps }) => {
+    loader: async ({ context, deps }) => {
 
         const params = new URLSearchParams();
         params.set("q", deps.q);
@@ -88,9 +87,13 @@ export const Route = createFileRoute("/_authenticated/_root/search")({
             params.set("bookmarked", "true");
         }
 
+        const tokens = await context.auth.getSession();
+
+        if (!tokens) throw new Error("No valid session found");
+
         const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/search?${params.toString()}`, {
             headers: {
-                "Authorization": `Bearer ${getSessionToken()}`
+                "Authorization": `Bearer ${tokens.accessToken}`
             }
         });
 

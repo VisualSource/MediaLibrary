@@ -9,6 +9,7 @@ import useBookmarks from "@hook/useBookmarks";
 import { type MediaItem } from '@lib/types';
 import CardGroup from "@ui/CardGroup";
 import CardWide from "@ui/CardWide";
+import useAuth from "@/hooks/useAuth";
 
 
 const QUERY_RECOMMEDED = "RECOMMEDED";
@@ -16,14 +17,15 @@ const QUERY_WATCHED = "WATCHED";
 
 const Index: React.FC = () => {
     const bookmarks = useBookmarks();
-
+    const { ctx } = useAuth();
     const mediaWatched = useQuery({
         queryKey: [QUERY_WATCHED],
         queryFn: async () => {
             const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/media/watched`);
             if (!response.ok) throw response;
             return response.json() as Promise<MediaItem[]>;
-        }
+        },
+        enabled: !ctx.isLoading && ctx.isAuthenticated()
     });
 
     const mediaRecommeded = useQuery({
@@ -32,7 +34,8 @@ const Index: React.FC = () => {
             const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/media/recommeded`);
             if (!response.ok) throw response;
             return response.json() as Promise<MediaItem[]>;
-        }
+        },
+        enabled: !ctx.isLoading && ctx.isAuthenticated()
     });
 
     return (

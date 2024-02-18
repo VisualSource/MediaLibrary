@@ -22,24 +22,17 @@ type FormState = {
 
 const SignUp: React.FC = () => {
     const [showPassword, setShowPassword] = useState(false);
-    const auth = useAuth();
+    const { ctx } = useAuth();
     const navigate = useNavigate();
     const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<FormState>();
 
     const onSubmit = async (state: FormState) => {
         try {
-            const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/auth/signup`, {
-                method: "POST",
-                headers: {
-                    "content-type": "application/json"
-                },
-                body: JSON.stringify({ password: state.password, email: state.email, username: state.username })
+            await ctx.signup({
+                username: state.username,
+                email: state.email,
+                password: state.password
             });
-
-            if (!response.ok) throw response;
-            const { accessToken } = await response.json() as { accessToken: string };
-            auth.setToken(accessToken);
-
             navigate({ to: "/" });
         } catch (error) {
             console.error(error);

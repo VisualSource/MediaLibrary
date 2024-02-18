@@ -13,14 +13,18 @@ type MutationRequest = {
 }
 
 const useMutationBookmark = () => {
-    const auth = useAuth();
+    const { ctx, user } = useAuth();
     const queryClient = useQueryClient();
 
-    const uuid = auth.user.data?.jwtId;
+    const uuid = user?.jwtId;
 
     const mutation = useMutation({
         mutationFn: async ({ id }: MutationRequest) => {
-            if (!auth.isAuthenticated()) throw new Error("Unable to update");
+            if (!ctx.isAuthenticated()) throw new Error("Unable to update");
+
+            const tokens = await ctx.getSession();
+
+            if (!tokens) throw new Error("Update to make request");
 
             const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/bookmark`, {
                 method: "PUT",
@@ -28,7 +32,7 @@ const useMutationBookmark = () => {
                     item: id,
                 }),
                 headers: {
-                    "Authorization": `Bearer ${auth.session}`,
+                    "Authorization": `Bearer ${tokens.accessToken}`,
                     "Content-Type": "application/json"
                 }
             });

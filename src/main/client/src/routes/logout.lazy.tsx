@@ -1,10 +1,10 @@
-import useAuth from "@/hooks/useAuth";
 import { createLazyFileRoute, useNavigate } from "@tanstack/react-router";
+import useAuth from "@/hooks/useAuth";
 import Button from "@ui/Button";
 
 const Logout: React.FC = () => {
     const navigate = useNavigate();
-    const auth = useAuth();
+    const { ctx } = useAuth();
 
     return (
         <div className="grid grid-cols-1 md:grid-cols-2 grid-rows-none h-full">
@@ -17,10 +17,11 @@ const Logout: React.FC = () => {
                 <h1 className="text-2xl font-semibold tracking-tight">Click to logout</h1>
 
                 <div className="flex flex-col space-y-6 w-1/4">
-                    <Button className="bg-neutral-50 text-neutral-950 hover:bg-neutral-50/90 h-10 px-4 py-2" onClick={() => {
-                        auth.setToken(null);
+                    <Button className="bg-neutral-50 text-neutral-950 hover:bg-neutral-50/90 h-10 px-4 py-2" onClick={async () => {
+                        await ctx.logout();
                         navigate({ to: "/login" });
-                    }}>Logout</Button>
+                    }
+                    }>Logout</Button>
                 </div>
             </div>
         </div>

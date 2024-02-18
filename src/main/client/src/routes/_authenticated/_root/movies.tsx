@@ -13,7 +13,7 @@ const Movies: React.FC = () => {
     const bookmarks = useBookmarks();
     const movies = useMediaQuery<MediaItem[]>({
         queryKey: [QUERY_MOVIES],
-        searchParams: "?type=movie"
+        searchParams: "?type=movie",
     });
 
     return (
