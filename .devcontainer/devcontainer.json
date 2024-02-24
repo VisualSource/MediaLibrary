@@ -7,7 +7,8 @@
   "containerEnv": {
     "MYSQL_HOST": "192.168.1.8",
     "MYSQL_USERNAME": "admin",
-    "MYSQL_PASSWORD": "adminpassword"
+    "MYSQL_PASSWORD": "adminpassword",
+    "PROFILE": "dev"
   },
   "features": {
     "ghcr.io/devcontainers/features/java:1": {

@@ -24,7 +24,7 @@ public class RefreshTokenService {
     UserRepository userRepository;
 
     public void removeRefreshToken(Long user) {
-        Optional<RefreshToken> refreshToken = refreshTokenRepository.findByUserID(user);
+        Optional<RefreshToken> refreshToken = refreshTokenRepository.findByUserId(user);
 
         if (refreshToken.isPresent()) {
             RefreshToken token = refreshToken.get();

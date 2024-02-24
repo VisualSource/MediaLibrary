@@ -15,6 +15,7 @@ services:
       - MYSQL_HOST=192.168.1.8
       - MYSQL_USERNAME=admin
       - MYSQL_PASSWORD=adminpassword
+      - PROFILE=prod
     ports:
       - 8080:8080
 # The commented out section below is an example of how to define a PostgreSQL

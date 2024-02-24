@@ -9,5 +9,5 @@ import us.visualsource.media_entertainment_app.models.RefreshToken;
 public interface RefreshTokenRepository extends JpaRepository<RefreshToken, Integer> {
     Optional<RefreshToken> findByToken(String token);
 
-    Optional<RefreshToken> findByUserID(Long id);
+    Optional<RefreshToken> findByUserId(Long id);
 }

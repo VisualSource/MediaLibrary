@@ -23,7 +23,6 @@ import us.visualsource.media_entertainment_app.enums.ERole;
 import us.visualsource.media_entertainment_app.models.User;
 import us.visualsource.media_entertainment_app.models.RefreshToken;
 import us.visualsource.media_entertainment_app.models.Role;
-import us.visualsource.media_entertainment_app.repository.RefreshTokenRepository;
 import us.visualsource.media_entertainment_app.repository.RoleRepository;
 import us.visualsource.media_entertainment_app.repository.UserRepository;
 import us.visualsource.media_entertainment_app.services.JwtService;
@@ -86,7 +85,10 @@ public class AuthController {
 
         userRepository.save(user);
 
-        return JwtResponse.builder().accessToken(jwtService.GenerateToken(user.getJwtId())).build();
+        RefreshToken refreshToken = refreshTokenService.createRefreshToken(user.getJwtId());
+
+        return JwtResponse.builder().accessToken(jwtService.GenerateToken(user.getJwtId()))
+                .refreshToken(refreshToken.getToken()).build();
     }
 
     @PostMapping("/refreshToken")

@@ -2,6 +2,7 @@ package us.visualsource.media_entertainment_app.controllers;
 
 import java.util.Arrays;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -9,6 +10,7 @@ import io.jsonwebtoken.ExpiredJwtException;
 import us.visualsource.media_entertainment_app.dto.response.Error;
 import us.visualsource.media_entertainment_app.dto.response.ErrorResponse;
 import us.visualsource.media_entertainment_app.util.NotFoundException;
+import us.visualsource.media_entertainment_app.util.StorageFileNotFoundException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 
 @ControllerAdvice
@@ -43,11 +45,24 @@ public class ApiExecptionHandler {
         @ExceptionHandler(NotFoundException.class)
         public ResponseEntity<?> handleNotFoundException(NotFoundException ex) {
                 Error error = Error.builder().title("Not Found").detail(ex.getLocalizedMessage())
-                                .type("/error/not found").build();
+                                .type("/error/not-found").build();
 
                 ErrorResponse response =
                                 ErrorResponse.builder().status(HttpStatus.NOT_FOUND.value())
                                                 .errors(Arrays.asList(error)).build();
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
         }
+
+        @ExceptionHandler(StorageFileNotFoundException.class)
+        public ResponseEntity<?> handleStorageFileNotFound(StorageFileNotFoundException ex) {
+                Error error = Error.builder().title("File Not Found")
+                                .detail(ex.getLocalizedMessage()).type("/error/file/not-found")
+                                .build();
+
+                ErrorResponse response =
+                                ErrorResponse.builder().status(HttpStatus.NOT_FOUND.value())
+                                                .errors(Arrays.asList(error)).build();
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+        }
+
 }

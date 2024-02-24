@@ -21,6 +21,10 @@
 			<id>dev</id>
 			<activation>
 				<activeByDefault>true</activeByDefault>
+				<property>
+					<name>env.PROFILE</name>
+					<value>dev</value>
+				</property>
 			</activation>
 			<properties>
 				<spring.profiles.active>dev</spring.profiles.active>
@@ -31,6 +35,12 @@
 			<properties>
 				<spring.profiles.active>prod</spring.profiles.active>
 			</properties>
+			<activation>
+				<property>
+					<name>env.PROFILE</name>
+					<value>prod</value>
+				</property>
+			</activation>
 			<build>
 				<plugins>
 					<plugin>
@@ -91,11 +101,16 @@
 			<version>0.12.5</version>
 		</dependency>
 
-
 		<dependency>
 			<groupId>io.jsonwebtoken</groupId>
 			<artifactId>jjwt-api</artifactId>
 			<version>0.12.5</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.jodd</groupId>
+			<artifactId>jodd-util</artifactId>
+			<version>6.2.1</version>
 		</dependency>
 
 		<dependency>
