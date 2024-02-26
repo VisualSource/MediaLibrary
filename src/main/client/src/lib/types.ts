@@ -1,6 +1,7 @@
 export type MediaItem = {
     uuid: string;
     name: string;
+    size: number;
     releaseYear: number;
     mediaType: string;
     contentType: string;

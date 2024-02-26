@@ -57,7 +57,6 @@ public class JwtService {
         return (uuid.equals(userDetails.getJwtId()) && !isTokenExpired(token));
     }
 
-
     public String GenerateToken(UUID id) {
         Map<String, Object> claims = new HashMap<>();
         return createToken(claims, id.toString());

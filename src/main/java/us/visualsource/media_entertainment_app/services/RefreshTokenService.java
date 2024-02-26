@@ -11,6 +11,7 @@ import us.visualsource.media_entertainment_app.models.RefreshToken;
 import us.visualsource.media_entertainment_app.models.User;
 import us.visualsource.media_entertainment_app.repository.RefreshTokenRepository;
 import us.visualsource.media_entertainment_app.repository.UserRepository;
+import us.visualsource.media_entertainment_app.services.impl.UserDetailsImpl;
 
 @Service
 public class RefreshTokenService {
@@ -33,6 +34,22 @@ public class RefreshTokenService {
                 refreshTokenRepository.delete(token);
         }
 
+    }
+
+    public RefreshToken getRefreshToken(UserDetailsImpl user) {
+        Optional<RefreshToken> token = refreshTokenRepository.findByUserId(user.getId());
+        if (token.isEmpty()) {
+            return createRefreshToken(user.getJwtId());
+        }
+
+        RefreshToken rftoken = token.get();
+
+        if (rftoken.getExpiryDate().compareTo(Instant.now()) < 0) {
+            refreshTokenRepository.delete(rftoken);
+            return createRefreshToken(user.getJwtId());
+        }
+
+        return rftoken;
     }
 
     public RefreshToken createRefreshToken(UUID userUuid) {

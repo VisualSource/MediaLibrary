@@ -33,82 +33,85 @@ import us.visualsource.media_entertainment_app.services.impl.UserDetailsImpl;
 @RequestMapping("/api/auth")
 public class AuthController {
 
-    @Autowired
-    AuthenticationManager authenticationManager;
-    @Autowired
-    JwtService jwtService;
-    @Autowired
-    UserRepository userRepository;
-    @Autowired
-    RoleRepository roleRepository;
-    @Autowired
-    RefreshTokenService refreshTokenService;
-    @Autowired
-    PasswordEncoder encoder;
+        @Autowired
+        AuthenticationManager authenticationManager;
+        @Autowired
+        JwtService jwtService;
+        @Autowired
+        UserRepository userRepository;
+        @Autowired
+        RoleRepository roleRepository;
+        @Autowired
+        RefreshTokenService refreshTokenService;
+        @Autowired
+        PasswordEncoder encoder;
 
-    @PostMapping("/login")
-    public JwtResponse AuthenticateAndGetToken(@Valid @RequestBody AuthRequest authRequest)
-            throws UsernameNotFoundException {
-        Authentication authentication =
-                authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
-                        authRequest.getEmail(), authRequest.getPassword()));
+        @PostMapping("/login")
+        public JwtResponse AuthenticateAndGetToken(@Valid @RequestBody AuthRequest authRequest)
+                        throws UsernameNotFoundException {
+                Authentication authentication = authenticationManager.authenticate(
+                                new UsernamePasswordAuthenticationToken(authRequest.getEmail(),
+                                                authRequest.getPassword()));
 
-        if (authentication.isAuthenticated()) {
-            UserDetailsImpl user = (UserDetailsImpl) authentication.getPrincipal();
-            RefreshToken refreshToken = refreshTokenService.createRefreshToken(user.getJwtId());
+                if (authentication.isAuthenticated()) {
+                        UserDetailsImpl user = (UserDetailsImpl) authentication.getPrincipal();
+                        RefreshToken refreshToken = refreshTokenService.getRefreshToken(user);
 
-            return JwtResponse.builder().refreshToken(refreshToken.getToken())
-                    .accessToken(jwtService.GenerateToken(user.getJwtId())).build();
+                        return JwtResponse.builder().refreshToken(refreshToken.getToken())
+                                        .accessToken(jwtService.GenerateToken(user.getJwtId()))
+                                        .build();
+                }
+
+                throw new UsernameNotFoundException("invaild user request.");
         }
 
-        throw new UsernameNotFoundException("invaild user request.");
-    }
+        @PostMapping("/signup")
+        public JwtResponse CreateAndGetToken(@Valid @RequestBody SignupRequest signupRequest)
+                        throws InvalidAttributeValueException {
 
-    @PostMapping("/signup")
-    public JwtResponse CreateAndGetToken(@Valid @RequestBody SignupRequest signupRequest)
-            throws InvalidAttributeValueException {
+                if (userRepository.existsByEmail(signupRequest.getEmail())) {
+                        throw new InvalidParameterException();
+                }
 
-        if (userRepository.existsByEmail(signupRequest.getEmail())) {
-            throw new InvalidParameterException();
+                User user = new User(signupRequest.getUsername(), signupRequest.getEmail(),
+                                encoder.encode(signupRequest.getPassword()));
+
+                user.GenerateAvatar();
+                Set<Role> roles = new HashSet<>();
+
+                Role userRole = roleRepository.findByName(ERole.ROLE_USER)
+                                .orElseThrow(() -> new RuntimeException("Failed to load role."));
+                roles.add(userRole);
+                user.setRoles(roles);
+
+                userRepository.save(user);
+
+                RefreshToken refreshToken = refreshTokenService.createRefreshToken(user.getJwtId());
+
+                return JwtResponse.builder().accessToken(jwtService.GenerateToken(user.getJwtId()))
+                                .refreshToken(refreshToken.getToken()).build();
         }
 
-        User user = new User(signupRequest.getUsername(), signupRequest.getEmail(),
-                encoder.encode(signupRequest.getPassword()));
+        @PostMapping("/refreshToken")
+        public JwtResponse refreshToken(@Valid @RequestBody RefreshTokenRequest request) {
+                return refreshTokenService.findbyToken(request.getToken())
+                                .map(refreshTokenService::verifyRefreshToken)
+                                .map(RefreshToken::getUser).map(user -> {
+                                        String accessToken =
+                                                        jwtService.GenerateToken(user.getJwtId());
+                                        return JwtResponse.builder().accessToken(accessToken)
+                                                        .refreshToken(request.getToken()).build();
+                                }).orElseThrow(() -> new RuntimeException(
+                                                "Vaild to validate refresh token"));
+        }
 
-        user.GenerateAvatar();
-        Set<Role> roles = new HashSet<>();
+        @PostMapping("/logout")
+        public ResponseEntity<?> logoutUser() {
+                UserDetailsImpl user = (UserDetailsImpl) SecurityContextHolder.getContext()
+                                .getAuthentication().getPrincipal();
 
-        Role userRole = roleRepository.findByName(ERole.ROLE_USER)
-                .orElseThrow(() -> new RuntimeException("Failed to load role."));
-        roles.add(userRole);
-        user.setRoles(roles);
+                refreshTokenService.removeRefreshToken(user.getId());
 
-        userRepository.save(user);
-
-        RefreshToken refreshToken = refreshTokenService.createRefreshToken(user.getJwtId());
-
-        return JwtResponse.builder().accessToken(jwtService.GenerateToken(user.getJwtId()))
-                .refreshToken(refreshToken.getToken()).build();
-    }
-
-    @PostMapping("/refreshToken")
-    public JwtResponse refreshToken(@Valid @RequestBody RefreshTokenRequest request) {
-        return refreshTokenService.findbyToken(request.getToken())
-                .map(refreshTokenService::verifyRefreshToken).map(RefreshToken::getUser)
-                .map(user -> {
-                    String accessToken = jwtService.GenerateToken(user.getJwtId());
-                    return JwtResponse.builder().accessToken(accessToken)
-                            .refreshToken(request.getToken()).build();
-                }).orElseThrow(() -> new RuntimeException("Vaild to validate refresh token"));
-    }
-
-    @PostMapping("/logout")
-    public ResponseEntity<?> logoutUser() {
-        UserDetailsImpl user = (UserDetailsImpl) SecurityContextHolder.getContext()
-                .getAuthentication().getPrincipal();
-
-        refreshTokenService.removeRefreshToken(user.getId());
-
-        return ResponseEntity.ok(null);
-    }
+                return ResponseEntity.ok(null);
+        }
 }

@@ -16,11 +16,13 @@ import { Route as rootRoute } from './routes/__root'
 import { Route as AuthenticatedImport } from './routes/_authenticated'
 import { Route as AuthenticatedRootImport } from './routes/_authenticated/_root'
 import { Route as AuthenticatedRootIndexImport } from './routes/_authenticated/_root/index'
+import { Route as AuthenticatedRootUploadImport } from './routes/_authenticated/_root/upload'
 import { Route as AuthenticatedRootSeriesImport } from './routes/_authenticated/_root/series'
 import { Route as AuthenticatedRootSearchImport } from './routes/_authenticated/_root/search'
 import { Route as AuthenticatedRootMoviesImport } from './routes/_authenticated/_root/movies'
 import { Route as AuthenticatedRootBookmarkedImport } from './routes/_authenticated/_root/bookmarked'
 import { Route as AuthenticatedRootAccountImport } from './routes/_authenticated/_root/account'
+import { Route as AuthenticatedRootMovieUuidImport } from './routes/_authenticated/_root/movie.$uuid'
 
 // Create Virtual Routes
 
@@ -60,6 +62,11 @@ const AuthenticatedRootIndexRoute = AuthenticatedRootIndexImport.update({
   getParentRoute: () => AuthenticatedRootRoute,
 } as any)
 
+const AuthenticatedRootUploadRoute = AuthenticatedRootUploadImport.update({
+  path: '/upload',
+  getParentRoute: () => AuthenticatedRootRoute,
+} as any)
+
 const AuthenticatedRootSeriesRoute = AuthenticatedRootSeriesImport.update({
   path: '/series',
   getParentRoute: () => AuthenticatedRootRoute,
@@ -85,6 +92,13 @@ const AuthenticatedRootAccountRoute = AuthenticatedRootAccountImport.update({
   path: '/account',
   getParentRoute: () => AuthenticatedRootRoute,
 } as any)
+
+const AuthenticatedRootMovieUuidRoute = AuthenticatedRootMovieUuidImport.update(
+  {
+    path: '/movie/$uuid',
+    getParentRoute: () => AuthenticatedRootRoute,
+  } as any,
+)
 
 // Populate the FileRoutesByPath interface
 
@@ -130,8 +144,16 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedRootSeriesImport
       parentRoute: typeof AuthenticatedRootImport
     }
+    '/_authenticated/_root/upload': {
+      preLoaderRoute: typeof AuthenticatedRootUploadImport
+      parentRoute: typeof AuthenticatedRootImport
+    }
     '/_authenticated/_root/': {
       preLoaderRoute: typeof AuthenticatedRootIndexImport
+      parentRoute: typeof AuthenticatedRootImport
+    }
+    '/_authenticated/_root/movie/$uuid': {
+      preLoaderRoute: typeof AuthenticatedRootMovieUuidImport
       parentRoute: typeof AuthenticatedRootImport
     }
   }
@@ -147,7 +169,9 @@ export const routeTree = rootRoute.addChildren([
       AuthenticatedRootMoviesRoute,
       AuthenticatedRootSearchRoute,
       AuthenticatedRootSeriesRoute,
+      AuthenticatedRootUploadRoute,
       AuthenticatedRootIndexRoute,
+      AuthenticatedRootMovieUuidRoute,
     ]),
   ]),
   LoginLazyRoute,

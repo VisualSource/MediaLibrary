@@ -20,7 +20,8 @@
     "react-dom": "^18.2.0",
     "react-hook-form": "^7.50.1",
     "tailwind-merge": "^2.2.1",
-    "use-debounce": "^10.0.0"
+    "use-debounce": "^10.0.0",
+    "video.js": "^8.10.0"
   },
   "devDependencies": {
     "@tanstack/react-query-devtools": "^5.20.2",
