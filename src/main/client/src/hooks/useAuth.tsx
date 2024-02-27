@@ -4,7 +4,7 @@ import { authContext, QUERY_USER } from '@auth/context';
 
 import { useNavigate } from '@tanstack/react-router';
 
-type User = {
+export type User = {
     username: string;
     avatar: string;
     email: string;
@@ -46,6 +46,9 @@ const useAuth = () => {
         user: data.data,
         get isLoading() {
             return data.isLoading || ctx.isLoading
+        },
+        hasRole(role: string) {
+            return data.data?.roles.includes(role) ?? false;
         },
         ctx
     };

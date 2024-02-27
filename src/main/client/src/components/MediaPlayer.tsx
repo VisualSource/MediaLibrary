@@ -26,7 +26,14 @@ const MediaPlayer: React.FC<MediaOptions> = ({ src, thumbnail, type }) => {
                 mediaPlayer.current = videojs(el, {
                     autoplay: false,
                     controls: true,
+                    controlBar: {
+                        skipButtons: {
+                            forward: 10,
+                            backward: 10
+                        }
+                    },
                     poster: thumbnail,
+                    enableDocumentPictureInPicture: true,
                     fluid: true,
                     responsive: true,
                     sources: [{

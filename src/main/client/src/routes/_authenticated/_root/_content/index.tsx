@@ -4,29 +4,20 @@ import { useQuery } from "@tanstack/react-query";
 import WideCardSkeletion from "@/components/ui/WideCardSkeletion";
 import CardSkeletion from "@/components/ui/CardSkeletion";
 import emitSearchParams from "@event/emitSearchParams";
-import Card, { CardContent } from "@ui/Card";
 import useBookmarks from "@hook/useBookmarks";
+import Card, { CardContent } from "@ui/Card";
+import useWatched from "@/hooks/useWatched";
 import { type MediaItem } from '@lib/types';
 import CardGroup from "@ui/CardGroup";
-import CardWide from "@ui/CardWide";
 import useAuth from "@/hooks/useAuth";
-
+import CardWide from "@ui/CardWide";
 
 const QUERY_RECOMMEDED = "RECOMMEDED";
-const QUERY_WATCHED = "WATCHED";
 
 const Index: React.FC = () => {
     const bookmarks = useBookmarks();
     const { ctx } = useAuth();
-    const mediaWatched = useQuery({
-        queryKey: [QUERY_WATCHED],
-        queryFn: async () => {
-            const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/media/watched`);
-            if (!response.ok) throw response;
-            return response.json() as Promise<MediaItem[]>;
-        },
-        enabled: !ctx.isLoading && ctx.isAuthenticated()
-    });
+    const mediaWatched = useWatched();
 
     const mediaRecommeded = useQuery({
         queryKey: [QUERY_RECOMMEDED],
@@ -90,7 +81,7 @@ const Index: React.FC = () => {
                         </div>
                     ) :
                         mediaRecommeded.data?.map(e => (
-                            <Card type={e.mediaType} key={e.uuid} id={e.uuid} bookmarked={bookmarks.data?.findIndex(b => b.media.uuid === e.uuid) !== -1} background={{ url: e.thumbnail, alt: "", color: e.fallbackColor }}>
+                            <Card key={e.uuid} id={e.uuid} bookmarked={bookmarks.data?.findIndex(b => b.media.uuid === e.uuid) !== -1} background={{ url: e.thumbnail, alt: "", color: e.fallbackColor }}>
                                 <CardContent className="pt-2" ratingClassName="inline-flex" titleClassName="text-base md:text-lg" title={e.name} year={e.releaseYear.toString()} type={e.mediaType} rating={e.rating} />
                             </Card>
                         ))}
@@ -99,7 +90,7 @@ const Index: React.FC = () => {
     );
 }
 
-export const Route = createFileRoute("/_authenticated/_root/")({
+export const Route = createFileRoute("/_authenticated/_root/_content/")({
     component: Index,
     onEnter() {
         emitSearchParams("Search Movies and Tv series");

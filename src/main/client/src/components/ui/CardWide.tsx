@@ -21,8 +21,8 @@ type CardProps = {
 const CardWide: React.FC<CardProps> = ({ bookmarked, background, data }) => {
     const mutation = useMutationBookmark();
     return (
-        <Link to={data.type === "movie" ? "/movie/$uuid" : "/"} params={{ uuid: data.id }} className="relative w-[18rem] h-[10.9rem] md:w-[26rem] md:h-[12.5rem] lg:h-56 lg:w-[28.5rem] shrink-0 block">
-            <div className='relative h-full w-full shadow'>
+        <Link to="/content/$uuid" params={{ uuid: data.id }} className="relative w-[18rem] h-[10.9rem] md:w-[26rem] md:h-[12.5rem] lg:h-56 lg:w-[28.5rem] shrink-0 block">
+            <div className='relative h-full w-full shadow rounded-lg' style={{ backgroundColor: background.color }}>
                 <button onClick={() => mutation.mutateAsync({ state: bookmarked, id: data.id })} className={"absolute right-3 top-3 h-10 w-10 md:right-4 md:w-8 md:h-8 bg-neutral-700/65 hover:bg-neutral-800/95 transition rounded-full flex items-center justify-center text-zinc-50"}> {bookmarked ? <BookmarkCheck className="h-6 w-6 md:h-4 md:w-4" /> : <Bookmark className="h-6 w-6 md:h-4 md:w-4" />} </button>
                 <img className={"rounded-lg h-full w-full"} src={background.url} alt={background.url} />
             </div>

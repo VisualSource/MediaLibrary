@@ -1,6 +1,6 @@
 import { createLazyFileRoute, useNavigate } from "@tanstack/react-router";
 import useAuth from "@/hooks/useAuth";
-import Button from "@ui/Button";
+import { Button } from "@ui/Button";
 
 const Logout: React.FC = () => {
     const navigate = useNavigate();

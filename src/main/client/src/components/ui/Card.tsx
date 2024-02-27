@@ -6,7 +6,6 @@ import { Link } from '@tanstack/react-router';
 type CardProps = {
     bookmarked: boolean
     id: string,
-    type: string;
     background: {
         url: string;
         alt: string;
@@ -14,12 +13,12 @@ type CardProps = {
     }
 }
 
-const Card: React.FC<React.PropsWithChildren<CardProps>> = ({ type, id, bookmarked, background, children }) => {
+const Card: React.FC<React.PropsWithChildren<CardProps>> = ({ id, bookmarked, background, children }) => {
     const mutation = useMutationBookmark();
 
     return (
         <div className="relative min-h-min h-full">
-            <Link to={type === "movie" ? "/movie/$uuid" : "/"} params={{ uuid: id }} style={{ backgroundColor: background.color }} className='rounded-lg relative shadow w-full h-[8rem] md:h-36 lg:h-[11.5rem] inline-block'>
+            <Link to="/content/$uuid" params={{ uuid: id }} style={{ backgroundColor: background.color }} className='rounded-lg relative shadow w-full h-[8rem] md:h-36 lg:h-[11.5rem] inline-block'>
                 <button type="button" onClick={() => mutation.mutateAsync({ state: bookmarked, id })} className="absolute top-3 right-3 md:right-4 h-10 w-10 md:h-8 md:w-8 bg-neutral-700/65 hover:bg-neutral-800/95 transition rounded-full flex items-center justify-center text-zinc-50"> {bookmarked ? <BookmarkCheck className="h-8 w-8 md:h-4 md:w-4" /> : <Bookmark className="h-5 w-5 md:h-4 md:w-4" />} </button>
                 <img className="rounded-lg h-full w-full" src={background.url} alt={background.url} />
             </Link>

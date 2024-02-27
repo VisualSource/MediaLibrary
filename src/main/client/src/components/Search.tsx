@@ -4,7 +4,7 @@ import { useDebounce } from "use-debounce";
 import { SearchIcon } from 'lucide-react';
 
 import { EVENT_SEARCH_PARAMS_KEY } from "@event/emitSearchParams";
-import Input from '@ui/Input';
+import { Input } from '@ui/Input';
 
 const Search: React.FC = () => {
     const navigate = useNavigate();

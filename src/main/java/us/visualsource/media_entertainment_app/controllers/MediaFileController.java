@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.Optional;
 import java.util.UUID;
+import javax.swing.text.html.Option;
 import org.apache.coyote.BadRequestException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,7 +23,9 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 import jakarta.validation.Valid;
 import jodd.net.MimeTypes;
+import lombok.NonNull;
 import us.visualsource.media_entertainment_app.dto.request.FileUploadRequest;
+import us.visualsource.media_entertainment_app.dto.request.PatchMediaMetadataRequest;
 import us.visualsource.media_entertainment_app.models.Media;
 import us.visualsource.media_entertainment_app.repository.MediaRepository;
 import us.visualsource.media_entertainment_app.services.FileSystemStorageService;
@@ -63,7 +66,7 @@ public class MediaFileController {
         return ResponseEntity.status(HttpStatus.CREATED).body(media);
     }
 
-
+    @PreAuthorize("hasRole('USER')")
     @GetMapping("/{uuid}/metadata")
     public ResponseEntity<Media> GetFileMetadata(@PathVariable("uuid") UUID id)
             throws NotFoundException, BadRequestException {
@@ -79,6 +82,7 @@ public class MediaFileController {
         return ResponseEntity.ok(media.get());
     }
 
+    @PreAuthorize("hasRole('USER')")
     @GetMapping("/{filename:.+}")
     public ResponseEntity<StreamingResponseBody> GetFileDownload(
             @PathVariable(value = "filename") String filename,
@@ -97,7 +101,7 @@ public class MediaFileController {
             long rangeStart = 0L;
             long rangeEnd = 0L;
 
-            logger.info("Read rang seeking value.");
+            logger.info("Read rangecode seeking value.");
             logger.info(String.format("Range values: [%s]", rangeHeader));
 
             int dashPos = rangeHeader.indexOf("-");
@@ -135,13 +139,62 @@ public class MediaFileController {
         }
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PatchMapping("/{uuid}/metadata")
-    public ResponseEntity<?> PatchFileMetadata() {
+    public ResponseEntity<?> PatchFileMetadata(@PathVariable("uuid") UUID id,
+            @Valid @RequestBody PatchMediaMetadataRequest request)
+            throws BadRequestException, NotFoundException {
+        if (id == null)
+            throw new BadRequestException("Invaild item uuid");
+        Optional<Media> omedia = mediaRepository.findById(id);
+        Media media = omedia.orElseThrow(() -> new NotFoundException("Failed to find item"));
+        if (media == null)
+            throw new NotFoundException("Failed to find media item");
+
+        String name = request.getName();
+
+        if (name != null && media.getName() != name) {
+            media.setName(name);
+        }
+
+        String thumbnail = request.getThumbnail();
+        if (thumbnail != null && thumbnail != media.getThumbnail()) {
+            media.setThumbnail(thumbnail);
+        }
+
+        Long releaseYear = request.getReleaseYear();
+        if (releaseYear != null && releaseYear != media.getReleaseYear()) {
+            media.setReleaseYear(releaseYear);
+        }
+
+        String rating = request.getRating();
+        if (rating != null && rating != media.getRating()) {
+            media.setRating(rating);
+        }
+
+        mediaRepository.save(media);
+
         return ResponseEntity.ok(null);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{uuid}")
-    public ResponseEntity<?> DeleteFile() {
+    public ResponseEntity<?> DeleteFile(@PathVariable("uuid") UUID id)
+            throws BadRequestException, NotFoundException, IOException {
+        if (id == null)
+            throw new BadRequestException("Invaild uuid");
+
+        Optional<Media> omedia = mediaRepository.findById(id);
+
+        Media media = omedia.get();
+        if (media == null)
+            throw new NotFoundException("Failed to find item");
+
+        String filename = media.getContentPath().replace("/file/", "");
+
+        storageService.delete(filename);
+        mediaRepository.delete(media);
+
         return ResponseEntity.ok(null);
     }
 

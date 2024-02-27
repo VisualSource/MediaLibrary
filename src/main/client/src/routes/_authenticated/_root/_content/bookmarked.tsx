@@ -43,7 +43,7 @@ const Bookmarked: React.FC = () => {
                         ) : null}
                     </div>
                 ) : bookmarkedMovies.data?.map(e => (
-                    <Card type={e.mediaType} key={e.uuid} id={e.uuid} bookmarked={true} background={{ url: e.thumbnail, alt: "", color: e.fallbackColor }}>
+                    <Card key={e.uuid} id={e.uuid} bookmarked={true} background={{ url: e.thumbnail, alt: "", color: e.fallbackColor }}>
                         <CardContent className="pt-2" ratingClassName="inline-flex" titleClassName="text-base md:text-lg" title={e.name} year={e.releaseYear.toString()} type={e.mediaType} rating={e.rating} />
                     </Card>
                 ))}
@@ -66,7 +66,7 @@ const Bookmarked: React.FC = () => {
                         ) : null}
                     </div>
                 ) : bookmarkedTvSeries.data?.map(e => (
-                    <Card type={e.mediaType} key={e.uuid} id={e.uuid} bookmarked={true} background={{ url: e.thumbnail, alt: "", color: e.fallbackColor }}>
+                    <Card key={e.uuid} id={e.uuid} bookmarked={true} background={{ url: e.thumbnail, alt: "", color: e.fallbackColor }}>
                         <CardContent className="pt-2" ratingClassName="inline-flex" titleClassName="text-base md:text-lg" title={e.name} year={e.releaseYear.toString()} type={e.mediaType} rating={e.rating} />
                     </Card>
                 ))}
@@ -75,7 +75,7 @@ const Bookmarked: React.FC = () => {
     );
 }
 
-export const Route = createFileRoute("/_authenticated/_root/bookmarked")({
+export const Route = createFileRoute("/_authenticated/_root/_content/bookmarked")({
     component: Bookmarked,
     onEnter() {
         emitSearchParams("Search bookmarked Movies and TV series", undefined, true);

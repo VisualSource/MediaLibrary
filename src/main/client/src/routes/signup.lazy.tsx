@@ -3,16 +3,11 @@ import { useForm } from "react-hook-form";
 import { useState } from "react";
 
 import useAuth from "@hook/useAuth";
+import { Button } from "@ui/Button";
+import { Input } from "@ui/Input";
+import { Label } from "@ui/label";
 import { cn } from "@/lib/utils";
-import Button from "@ui/Button";
-import Input from "@ui/Input";
-import Label from "@ui/Label";
 
-/*
- Setup X-XSRF-TOKEN
-    get token form cookie XSRF-TOKEN
-
-*/
 type FormState = {
     username: string;
     email: string;

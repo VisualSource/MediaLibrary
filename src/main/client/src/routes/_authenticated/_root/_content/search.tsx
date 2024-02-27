@@ -28,7 +28,7 @@ const Search: React.FC = () => {
                         ) : null}
                     </div>
                 ) : data.map(e => (
-                    <Card type={e.mediaType} key={e.uuid} id={e.uuid} bookmarked={bookmarks.data?.findIndex(b => b.media.uuid === e.uuid) !== -1} background={{ url: e.thumbnail, alt: "", color: e.fallbackColor }}>
+                    <Card key={e.uuid} id={e.uuid} bookmarked={bookmarks.data?.findIndex(b => b.media.uuid === e.uuid) !== -1} background={{ url: e.thumbnail, alt: "", color: e.fallbackColor }}>
                         <CardContent className="pt-2" ratingClassName="inline-flex" titleClassName="text-base md:text-lg" title={e.name} year={e.releaseYear.toString()} type={e.mediaType} rating={e.rating} />
                     </Card>
                 ))}
@@ -52,7 +52,7 @@ const ErrorComponent = () => {
     );
 }
 
-export const Route = createFileRoute("/_authenticated/_root/search")({
+export const Route = createFileRoute("/_authenticated/_root/_content/search")({
     component: Search,
     errorComponent: ErrorComponent,
     pendingComponent: PendingComponent,

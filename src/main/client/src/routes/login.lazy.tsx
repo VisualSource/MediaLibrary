@@ -1,12 +1,12 @@
 import { Link, createLazyFileRoute, useNavigate } from "@tanstack/react-router";
 import { useForm } from 'react-hook-form';
-import useAuth from "@/hooks/useAuth";
 
-import { cn } from "@/lib/utils";
-import Button from "@ui/Button";
-import Input from "@ui/Input";
-import Label from "@ui/Label";
 import { AuthError } from "@/lib/auth/context";
+import useAuth from "@/hooks/useAuth";
+import { Button } from "@ui/Button";
+import { Input } from "@ui/Input";
+import { Label } from "@ui/label";
+import { cn } from "@/lib/utils";
 
 type FormState = {
     email: string;

@@ -1,7 +1,8 @@
-import { Bookmark, Tv, Film, LayoutGrid, Clapperboard } from 'lucide-react';
+import { Bookmark, Tv, Film, LayoutGrid, Clapperboard, User2 } from 'lucide-react';
 import { Link } from "@tanstack/react-router";
+
+import { Avatar, AvatarFallback, AvatarImage } from "@ui/Avatar";
 import useAuth from '@hook/useAuth';
-import Avatar from "@ui/Avatar";
 
 const Navbar: React.FC = () => {
     const auth = useAuth();
@@ -36,7 +37,12 @@ const Navbar: React.FC = () => {
                 </div>
 
                 <Link to="/account" className="lg:mt-auto">
-                    <Avatar className="h-8 w-8 lg:h-10 lg:w-10" url={auth.user?.avatar} />
+                    <Avatar className="h-8 w-8 lg:h-10 lg:w-10 border-2 border-white">
+                        <AvatarImage src={auth.user?.avatar} />
+                        <AvatarFallback>
+                            <User2 />
+                        </AvatarFallback>
+                    </Avatar>
                 </Link>
             </nav>
         </div>

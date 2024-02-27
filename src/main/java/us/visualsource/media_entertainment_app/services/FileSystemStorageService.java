@@ -210,8 +210,8 @@ public class FileSystemStorageService {
         }
     }
 
-    public void delete(String filename) {
-        Path file = load(filename);
-        FileSystemUtils.deleteRecursively(file.toFile());
+    public void delete(String filename) throws IOException {
+        Resource file = loadAsResource(filename);
+        file.getFile().delete();
     }
 }
